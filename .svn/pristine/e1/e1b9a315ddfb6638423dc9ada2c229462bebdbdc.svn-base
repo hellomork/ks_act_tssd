@@ -1,0 +1,40 @@
+const API_LIST = {
+  common: {
+    share: 'common/getFShareAutograph.oc'
+  },
+  user: {
+    sysTime: 'common/getSystemInfo.login',
+    info: 'users/getSessionThridUserInfo.oc',
+    infoLogin: 'users/getSessionUserInfo.oc',
+    login: 'users/managerLogin.login',
+    loginPic: 'common/getLoginCode.login',
+    loginOut: 'common/loginOut.login',
+    bindMobile: 'users/bindUserMobile.login', // 绑定手机/注册
+    verifyCodes: 'common/getVerifyCodes.login', // 获取手机验证码
+    checkCodes: 'common/checkVerifyCodes.login', // 验证验证码是否正确
+    signature: 'common/getSignature.oc',
+    vote: 'oc_statistic/insertKaOcStatistic.oc'// 用户投票
+  },
+  act: {
+    list: 'operate/getFrontOperateContentList.oc',
+    upload: 'operate/userContributionList.oc',
+    song: 'operate_content/insertKaOperateContent.oc', // 歌词歌曲投稿
+    totalNum: 'operate_content/getTotalNum.show',
+    actDetail: 'operate_content/getOpContentDetail.show',
+    readerCount: 'operate/usersReade.show'
+  },
+  visit: {
+    insert: 'visitor/insertKaVisitor.show'
+  },
+  backEnd: {
+    list: 'operate/getFrontOperateContentList.do', // 后台获取投稿列表
+    detail: 'operate_content/getKaOperateContent.show',
+    update: 'operate_content/updateKaOperateContent.do',
+    boutique: 'operate_content_boutique/updateBoutique.do', // 后台入围或待定
+    deleteBoutique: 'operate_content_boutique/deleteBoutiqueByOcCode.do', // 取消待定与入围
+    check: 'operate_content/updateKaOperateContent.do', // 后台审核为精选
+    delete: 'operate_content/updateKaOperateContent.do' // 后台删除
+  }
+}
+
+export default API_LIST

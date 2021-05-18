@@ -1,0 +1,458 @@
+<template>
+  <div class="whole">
+    <!-- pc -->
+    <div class="pc_page" v-if="!isMobile">
+      <headbg></headbg>
+      <pcnav :navNum="navNum"></pcnav>
+      <div class="contain">
+        <div class="act-container">
+          <div class="special spec">
+            <div class="pic">
+              <img src="@/assets/img/hzact/titie_01.png" alt />
+            </div>
+            <p class="first" style="letter-spacing: 1px">
+              为热烈庆祝中国共产党建党100周年，宣传爱党爱国主义教育，昆山市文化馆于6月1日儿童节之际，发起“童声诵党”庆党100周年昆山市少儿朗诵大赛，鼓舞阅读热情，营造良好阅读氛围，并以少儿视角讴歌100年来中国共产党走过的光辉历程和取得的伟大成就，带动市民重新温习党史，汲取奋进力量。
+            </p>
+            <h3 class="des">一、活动时间</h3>
+            <p class="second filladd">作品征集时间：2021年6月1日至6月30日。</p>
+            <p class="second filladd">
+              作品点赞时间：作品投稿成功后即可点赞，点赞截止时间2021年7月15日。
+            </p>
+            <!-- <h3 class="des">二、活动形式</h3>
+            <p class="second filladd">通过云南省图书馆（1、PC端：登录进入云南省图书馆http://www.ynlib.cn/，官网首页“童声诵党”活动专区。2、微信端：关注“云南省图书馆”微信公众号，从底部菜单栏：数字资源→云图活动栏目→“童声诵党”进入。）在全省开展少儿朗诵作品征集活动，活动奖项将通过线上评选方式产生。</p>
+            <h3 class="des">三、奖项设置</h3>
+            <p class="second filladd">本次活动分为“文稿类作品”和“朗诵类作品”，每种作品类型分别设有“特等奖”、“一等奖”、“二等奖”、“三等奖”、“最佳人气奖”（访问量），另外活动设有“最佳组织奖”。</p> -->
+            <h3 class="des">二、参赛要求</h3>
+            <p class="second filladd">
+              （一）参赛人群：全市少年儿童（7周岁-16周岁）；
+            </p>
+            <p class="second filladd">
+              （二）参赛内容：红色革命诗词、革命历史小故事均可（可原创）；
+            </p>
+            <p class="second filladd">（三）作品形式：视频格式（MP4 格式）；</p>
+            <p class="second filladd">
+              （四）内容时长：作品限时五分钟，所选内容脱稿朗诵；
+            </p>
+            <p class="second filladd">（五）作品大小：不超过100M；</p>
+            <p class="second filladd">
+              （六）朗诵要求：语音清晰准确、抑扬顿挫、情感丰富、表情达意、仪表得体大方具有感染力；
+            </p>
+            <p class="second filladd">
+              （七）参赛须知：投稿作品一经发现弄虚做假，一律取消参赛资格。
+            </p>
+            <h3 class="des">三、作品评选</h3>
+            <p class="second filladd">
+              本次大赛评选方式为专家评审与群众点赞同时进行，其中，专家评审结果占比60%，群众网络点赞结果占比40%。
+            </p>
+            <h3 class="des">四、网络点赞规则</h3>
+            <p class="second filladd">
+              每人每天对同一作品最多可点赞5次，不同作品不做限制。网络点赞最终结果对专家评审结果无影响，单独设奖。<span
+                style="color: red"
+                >（严禁刷票，一经查实严肃处理。）</span
+              >
+            </p>
+            <h3 class="des">五、结果公示</h3>
+            <p class="second filladd">
+              评选结束后，将通过活动专区页面进行活动结果公示，并以邮寄形式颁发活动奖项。奖项设置如下：
+            </p>
+            <span class="ill">1、选手奖项：</span>
+            <span class="ill mar">一等奖1名：证书+小霸王学习机H12一台；</span>
+            <span
+class="ill mar"
+              >二等奖3名：证书+小度智能学习平板M10一台；</span
+            >
+            <span class="ill mar">三等奖5名：证书+大力智能作业灯T5一台；</span>
+            <span
+class="ill mar"
+              >“最佳人气奖”1名：证书+少儿红色经典丛书一套；</span
+            >
+            <span
+class="ill mar"
+              >评选办法：奖项1、2、3为专家评审分及网络评分综合得分数排名依次选取，奖项4为线上网络点赞环节获赞数最多的选手。</span
+            >
+            <span class="ill">2、幸运观众奖项： </span>
+            <span
+class="ill mar"
+              >慧眼识英奖20名：喜马拉雅（听书APP）月度会员；</span
+            >
+            <span
+class="ill mar"
+              >抽取方法：评选结束后，从为冠军选手点过赞的用户中，随机抽取。</span
+            >
+            <span class="ill mar">公示时间：7月底。</span>
+            <!-- <span class="ill">4、幸运观众奖： </span>
+            <span class="ill mar">慧眼识英奖30名：云南省图书馆定制文创帆布包；</span>
+            <span class="ill mar">抽取方法：专家评审结束后，从为文稿类及视频类冠军选手点过赞的用户中，随机抽取。</span> -->
+            <!-- <span class="ill mar">本次活动是云南省图书馆为庆祝建党100周年，精心策划、组织的一场全省性少儿朗诵活动，请各图书馆积极参与，精心组织！</span> -->
+            <!-- <span class="ill mar">联系人： 张立娟 18269775996</span> -->
+            <h3 class="des">六、网络点赞规则</h3>
+            <p class="second filladd">投稿联系人：张立娟</p>
+            <p class="second filladd">联系电话：18269775996</p>
+            <p class="second filladd" style="color: red; font-size: 14px">
+              *本活动最终解释权属于昆山市文化馆。
+            </p>
+            <div class="button" @click="toPublish">我要投稿</div>
+          </div>
+          <div class="special spec" style="margin-top: 100px">
+            <div class="pic">
+              <img src="@/assets/img/hzact/titie_about.png" alt />
+            </div>
+            <ul class="about_me clearfix">
+              <li class="clearfix">
+                <div class="r">
+                  <img src="@/assets/img/wechat.png" alt="" />
+                </div>
+                <div class="c">
+                  <h3>微信公众号</h3>
+                  <p>昆山市文化馆</p>
+                </div>
+                <div class="erweima2">
+                  <img src="@/assets/img/weixin.jpg" />
+                </div>
+              </li>
+              <li class="clearfix">
+                <div class="r">
+                  <img
+                    style="width: 100%; height: 100%"
+                    src="@/assets/img/new/ic_guan.png"
+                    alt=""
+                  />
+                </div>
+                <div class="c">
+                  <h3>官网</h3>
+                  <p>昆山市文化馆</p>
+                </div>
+                <div class="erweima2">
+                  <img src="@/assets/img/guanwang.jpg" />
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- wx -->
+    <div class="wx_page" v-if="isMobile">
+      <wxheadbg></wxheadbg>
+      <wxnav :navNum="navNum"></wxnav>
+      <div class="article">
+        <div class="intro">
+          <div class="intro_title">
+            <img src="@/assets/imgwx/hzact/titie1.png" alt />
+          </div>
+          <p class="first">
+            为热烈庆祝中国共产党建党100周年，宣传爱党爱国主义教育，昆山市文化馆于6月1日儿童节之际，发起“童声诵党”庆党100周年昆山市少儿朗诵大赛，鼓舞阅读热情，营造良好阅读氛围，并以少儿视角讴歌100年来中国共产党走过的光辉历程和取得的伟大成就，带动市民重新温习党史，汲取奋进力量。
+          </p>
+          <h3 style="text-align: center; color: #e6352b">-活动时间-</h3>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            作品征集时间：2021年6月1日至6月30日。
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            作品点赞时间：作品投稿成功后即可点赞，点赞截止时间2021年7月15日。
+          </p>
+          <h3 style="text-align: center; color: #e6352b">-参赛要求-</h3>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （一）参赛人群：全市少年儿童（7周岁-16周岁）；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （二）参赛内容：红色革命诗词、革命历史小故事均可（可原创）；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （三）作品形式：视频格式（MP4 格式）；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （四）内容时长：作品限时五分钟，所选内容脱稿朗诵；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （五）作品大小：不超过100M；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （六）朗诵要求：语音清晰准确、抑扬顿挫、情感丰富、表情达意、仪表得体大方具有感染力；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            （七）参赛须知：投稿作品一经发现弄虚做假，一律取消参赛资格。
+          </p>
+          <h3 style="text-align: center; color: #e6352b">-作品评选-</h3>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            本次大赛评选方式为专家评审与群众点赞同时进行，其中，专家评审结果占比60%，群众网络点赞结果占比40%。
+          </p>
+          <h3 style="text-align: center; color: #e6352b">-网络点赞规则-</h3>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            每人每天对同一作品最多可点赞5次，不同作品不做限制。网络点赞最终结果对专家评审结果无影响，单独设奖。<i
+              style="font-size: 0.24rem; color: red; font-style: normal"
+              >（严禁刷票，一经查实严肃处理。）</i
+            >
+          </p>
+          <h3 style="text-align: center; color: #e6352b">-结果公示-</h3>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            评选结束后，将通过活动专区页面进行活动结果公示，并以邮寄形式颁发活动奖项。奖项设置如下：
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">1、选手奖项：</p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            一等奖1名：证书+小霸王学习机H12一台；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            二等奖3名：证书+小度智能学习平板M10一台；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            三等奖5名：证书+大力智能作业灯T5一台；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            “最佳人气奖”1名：证书+少儿红色经典丛书一套；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            评选办法：奖项1、2、3为专家评审分及网络评分综合得分数排名依次选取，奖项4为线上网络点赞环节获赞数最多的选手。
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            2、幸运观众奖项：
+          </p>
+          <p
+            style="
+              text-align: justify;
+              text-indent: 0.56rem;
+              margin-top: 0.1rem;
+            "
+          >
+            慧眼识英奖20名：喜马拉雅（听书APP）月度会员；
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            抽取方法：评选结束后，从为冠军选手点过赞的用户中，随机抽取。
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            公示时间：7月底。
+          </p>
+          <h3 style="text-align: center; color: #e6352b">-网络点赞规则-</h3>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            投稿联系人：张立娟
+          </p>
+          <p style="text-align: justify; text-indent: 0.56rem">
+            联系电话：18269775996
+          </p>
+          <p
+            style="
+              text-align: justify;
+              text-indent: 0.56rem;
+              color: red;
+              font-size: 0.2rem;
+            "
+          >
+            本活动最终解释权属于昆山市文化馆。
+          </p>
+        </div>
+      </div>
+      <div class="article" style="padding-top: 0.2rem">
+        <div class="intro">
+          <div class="intro_title">
+            <img src="@/assets/imgwx/hzact/title1.png" alt />
+          </div>
+          <h4
+style="font-size: 0.3rem;
+          text-align:center
+font-family: PingFang SC;
+font-weight: bold;
+color: #333333;"> -昆山市文化馆- </h4>
+          <ul class="about_mewx clearfix">
+            <li class="clearfix">
+              <div class="tit">
+                <div class="r">
+                  <img src="@/assets/img/wechat.png" alt="" />
+                </div>
+                <div class="c">
+                  <h3>微信公众号</h3>
+                </div>
+              </div>
+              <div class="erweima2">
+                <img src="@/assets/img/weixin.jpg" />
+              </div>
+            </li>
+            <li class="clearfix">
+             <div class="tit">
+                <div class="r rr">
+                <img
+                  style="width: 100%; height: 100%"
+                  src="@/assets/img/new/ic_guan.png"
+                  alt=""
+                />
+              </div>
+              <div class="c">
+                <h3>官网</h3>
+              </div>
+             </div>
+              <div class="erweima2">
+                <img src="@/assets/img/guanwang.jpg" />
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import headbg from './components/pcheader'
+import pcnav from './components/pcnav'
+import wxheadbg from './components/wxheadbg'
+import wxnav from './components/wxnav'
+import wxService from '@/api/wxService'
+var imgURrl = require('@/assets/img/shareicon.png')
+export default {
+  components: {
+    headbg,
+    pcnav,
+    wxheadbg,
+    wxnav
+  },
+  computed: {
+    ...mapGetters(['isMobile', 'publishStatus', 'timeDiff'])
+  },
+  data() {
+    return {
+      navNum: 0
+    }
+  },
+  methods: {
+    toPublish() {
+      var nowTime = this.timeDiff
+      var endTime = new Date('2021/06/15 23:59:59').getTime()
+      console.log('nowTime', nowTime)
+      console.log('endTime', endTime)
+      if (nowTime > endTime) {
+        if (this.isMobile) {
+          this.$toast('投稿已结束')
+        } else {
+          this.$message.info('投稿已结束')
+        }
+        return
+      }
+      // this.$message.info('投稿未开始')
+      this.$router.push({
+        path: '/worksubmit'
+      })
+    }
+  },
+  mounted() {
+    if (this.isMobile) {
+      var shareConfig = {}
+      shareConfig.currentTitle = '“童声诵党”庆祝建党100周年云南省少儿朗诵大赛'
+      shareConfig.share_url = window.location.href
+      shareConfig.currentCover = window.location.origin + '/21tssd/' + imgURrl
+      shareConfig.currentDetail = '庆祝建党100周年，弘扬爱党爱国主义。'
+      // console.log('分享参数：', shareConfig)
+      wxService.setWXConfig(shareConfig)
+    }
+  }
+}
+</script>
+<style lang="scss" scoped>
+.about_me {
+  padding-left: 105px;
+  li {
+    float: left;
+    padding: 21px 49px 21px 40px;
+    width: 400px;
+    background: #fbf3f1;
+    height: 120px;
+    margin-right: 120px;
+    &:last-child {
+      margin-right: 0;
+    }
+    .r {
+      width: 60px;
+      float: left;
+      margin-top: 10px;
+      height: 60px;
+      background: #4bc000;
+      position: relative;
+      border-radius: 12px;
+      img {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 44px;
+        height: 44px;
+      }
+    }
+    .c {
+      float: left;
+      margin-left: 9px;
+      h3 {
+        margin-top: 10px;
+        font-size: 18px;
+        font-family: Microsoft YaHei;
+        font-weight: 600;
+        color: #333333;
+      }
+      p {
+        margin-top: 10px;
+        font-size: 14px;
+        font-family: Microsoft YaHei;
+        font-weight: 400;
+        color: #666666;
+        opacity: 0.8;
+      }
+    }
+    .erweima2 {
+      float: right;
+      width: 78px;
+      height: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+.about_mewx{
+  margin-top: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  li{
+    width: 3rem;
+    padding: 0.21rem;
+    background: #FBF3F1;
+    border-radius: 10px;
+    .tit{
+      display: flex;
+      .r{
+        width: 0.4rem;
+        height: 0.4rem;
+        margin-left: 0.32rem;
+        background: #4BC000;
+        border-radius: 6px;
+        position: relative;
+        margin-top: 0.15rem;
+        img{
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%,-50%);
+          width: 0.2rem;
+          height: 0.2rem;
+        }
+
+      }
+      .rr{
+        margin-left: 0.72rem;
+      }
+       .c{
+         margin-left: 0.05rem;
+          font-size: 0.2rem;
+          font-family: PingFang SC;
+          font-weight: 500;
+          color: #333333;
+        }
+    }
+    .erweima2{
+      margin-top: 0.43rem;
+      width: 2.58rem;
+      height: 2.58rem;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+</style>

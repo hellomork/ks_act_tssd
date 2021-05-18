@@ -1,0 +1,302 @@
+<template>
+  <div class="act_detail">
+    <div class="head">
+      <h3>{{detail.ocName}}</h3>
+      <!-- <div class="sort">
+          <h5>No.1</h5>
+          <span>当前排名</span>
+      </div>-->
+    </div>
+    <div class="title">
+      <span>作者：{{detail.ocWrite}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span>编号：#{{detail.ocNumber}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <span>浏览量：{{detail.ocReade}}</span>
+      <!-- <p>组织单位：{{detail.company}}</p> -->
+    </div>
+    <div class="content" v-html="detail.ocComposingWords"></div>
+    <!-- <div class="fixbottom">
+      <div class="left">{{detail.ocVote}}票</div>
+      <div
+        class="right"
+        @click.stop="userVote(detail)"
+        v-if="detail.opStatus===1&&detail.flag===0"
+      >投票</div>
+      <div class="right" v-if="detail.opStatus===0">未开始</div>
+      <div class="right" v-if="detail.opStatus===1&&detail.flag===1">已投票</div>
+      <div class="right" v-if="detail.opStatus===2">已结束</div>
+    </div> -->
+
+    <!-- 返回首页 -->
+      <div class="backlogin" @click="back()">
+        <div class="back">
+          <img src="@/assets/imgwx/backlogo.png" alt="">
+        </div>
+    </div>
+       <!--微信分享指示-->
+    <div class="hom-sharewraper" id="hom-sharewraper" style="display:none" @click="closedAlert();">
+      <img src="@/assets/imgwx/share-alert.png" />
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import wxService from '@/api/wxService'
+var imgURrl = require('../../../assets/img/shareicon.png')
+export default {
+  computed: {
+    ...mapGetters(['isMobile', 'userInfo'])
+  },
+  data() {
+    return {
+      detail: {}
+    }
+  },
+  methods: {
+    back() {
+      this.$router.push({ path: '/picshow' })
+    },
+    // reader阅读量
+    getReadCount() {
+      const _this = this
+      const params = {}
+      params.ocCode = _this.detail.ocCode
+      _this.$apis.getReaderCount(params).then(res => {
+        if (res.data.status.returnCode === 100) {
+          _this.detail.ocReade++
+        }
+        console.log('res', res)
+      })
+    },
+    getDetail(callback) {
+      const params = {}
+      const _this = this
+      params.id = this.$route.params.id
+      params.operateCode = '308eac91-9e88-11eb-8ecb-b8599f37e6f0-1'
+      this.$apis.getDetail(params).then(res => {
+        console.log(res)
+        _this.detail = res.data.data.list[0]
+        _this.share(_this.detail)
+        if (callback) {
+          callback()
+        }
+      })
+    },
+    shareAlert() {
+      document.getElementById('hom-sharewraper').style.display = 'block'
+    },
+    closedAlert() {
+      document.getElementById('hom-sharewraper').style.display = 'none'
+    },
+    userVote(item) {
+      if (!this.userInfo) {
+        this.$dialog
+          .confirm({
+            title: '提示信息',
+            message: '您还未登录，请先登录',
+            confirmButtonText: '登录'
+          })
+          .then(() => {
+            window.location.href =
+              window.location.origin +
+              '/users/getAuthorizeCode.login?preurl=' +
+              window.location.href +
+              ',,' +
+              window.location.origin +
+              '/20gsds' +
+              '&userType=WXOPERATE'
+          })
+          .catch(() => {
+            // on cancel
+          })
+      } else {
+        this.vote(item)
+      }
+    },
+    vote(item) {
+      const params = {}
+      const _this = this
+      // 防止重复提交
+      if (!this.flag) {
+        this.flag = true
+        params.ocCode = item.ocCode
+        params.vote = 1
+        params.operateCode = item.operateCode
+        this.$apis.userVote(params).then(res => {
+          if (res.data.status.returnCode === 100) {
+            if (res.data.data.list[0] === true) { // 投票已满
+              item.flag = 1
+            }
+            _this.flag = false
+            _this.$message.success('投票成功')
+            item.ocVote++
+          }
+        })
+      }
+    },
+    share(item) {
+      if (this.isMobile) {
+        var shareConfig = {}
+        shareConfig.currentTitle = item.ocName
+        shareConfig.share_url = window.location.href
+        shareConfig.currentCover = window.location.origin + '/21tssd/' + imgURrl
+        shareConfig.currentDetail = '点击此处，查看作品详情。'
+        // console.log('分享参数：', shareConfig)
+        wxService.setWXConfig(shareConfig)
+      }
+    }
+
+  },
+  mounted() {
+    this.getDetail(() => {
+      this.getReadCount()
+    })
+  }
+}
+</script>
+<style lang="scss" scoped>
+.act_detail {
+  background-color: #F9F1EA;
+  padding: 0.4rem 0.26rem 1.5rem;
+  .head {
+    overflow: hidden;
+    h3 {
+      float: left;
+      margin-top: 0.1rem;
+      font-weight: bold;
+      font-size: 0.36rem;
+    }
+    .sort {
+      float: right;
+      text-align: center;
+      h5 {
+        font-weight: bold;
+        color: #d76928;
+      }
+      span {
+        font-size: 0.26rem;
+        color: #999999;
+      }
+    }
+  }
+  .title {
+    margin-top: 0.41rem;
+    color: #999999;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid #eeeeee;
+    span {
+      font-size: 0.26rem;
+    }
+    p {
+      margin-top: 0.21rem;
+      font-size: 0.26rem;
+    }
+  }
+
+}
+.fixbottom {
+  overflow: hidden;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 0.96rem;
+  .left {
+    float: left;
+    width: 40%;
+    height: 100%;
+    background-color: #f6f3e7;
+    color: #d76928;
+    line-height: 0.96rem;
+    text-align: center;
+  }
+  .right {
+    float: left;
+    width: 60%;
+    height: 100%;
+    background-color: #d76928;
+    color: white;
+    line-height: 0.96rem;
+    text-align: center;
+  }
+}
+.video_detail {
+  background-color: white;
+  height: 100vh;
+  video {
+    width: 100%;
+    height: 4.4rem;
+  }
+  .title {
+    padding: 0.1rem 0.26rem 1.5rem;
+    .head {
+      overflow: hidden;
+      h3 {
+        float: left;
+        width: 70%;
+        line-height: 0.5rem;
+         margin-top: 0.1rem;
+      font-weight: bold;
+      font-size: 0.36rem;
+      }
+      .sort {
+        float: left;
+        margin-top: 0.2rem;
+        width: 30%;
+        text-align: center;
+        h5 {
+          font-weight: bold;
+          color: #d76928;
+        }
+        span {
+          font-size: 0.26rem;
+          color: #999999;
+        }
+      }
+    }
+     .title2 {
+    margin-top: 0.41rem;
+    color: #999999;
+    padding-bottom: 0.3rem;
+    // border-bottom: 1px solid #eeeeee;
+    span {
+      font-size: 0.26rem;
+    }
+    p {
+      margin-top: 0.21rem;
+      font-size: 0.26rem;
+    }
+  }
+  }
+}
+.backlogin{
+  position: fixed;
+  right: 0;
+  top: 7.6rem;
+  z-index: 99;
+  .back{
+    width: 1rem;
+    height: 1rem;
+    img{
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.hom-sharewraper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  padding-top: 0.6rem;
+  padding-left: 2.3rem;
+}
+.hom-sharewraper img {
+  display: block;
+  width: 4.77rem;
+  height: 3.68rem;
+}
+</style>
+

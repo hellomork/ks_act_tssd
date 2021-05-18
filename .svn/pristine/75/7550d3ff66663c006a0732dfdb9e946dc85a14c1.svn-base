@@ -1,0 +1,253 @@
+<template>
+  <div class="whole">
+    <!-- pc -->
+    <div class="pc_page" v-if="!isMobile">
+      <headbg></headbg>
+      <pcnav :navNum="navNum"></pcnav>
+      <div class="contain">
+        <div class="act-container">
+          <div class="special spec">
+            <div class="pic">
+              <img src="@/assets/img/hzact/titie_01.png" alt />
+            </div>
+            <p class="first" style="letter-spacing: 1px">
+             为热烈庆祝中国共产党建党100周年，开展爱党爱国主义教育，感受革命精神带来的伟大力量，鼓舞群众的阅读热情，营造良好阅读氛围，培养少儿爱国主义情操，通过少儿讴歌100年来中国共产党走过的光辉历程和取得的伟大成就，带动全省人民重新温习党史，汲取奋进力量，云南省图书馆特组织举办“童声诵党”庆祝建党100周年云南省少儿朗诵大赛。请各州（市）、县（区）图书馆认真组织区域内广大读者积极参与活动。
+            </p>
+            <h3 class="des" >一、活动时间</h3>
+            <p class="second filladd">
+              征集时间：4月23日-6月15日
+            </p>
+            <p class="second filladd">
+              评选时间：6月下旬
+            </p>
+            <h3 class="des">二、活动形式</h3>
+            <p class="second filladd">通过云南省图书馆（1、PC端：登录进入云南省图书馆http://www.ynlib.cn/，官网首页“童声诵党”活动专区。2、微信端：关注“云南省图书馆”微信公众号，从底部菜单栏：数字资源→云图活动栏目→“童声诵党”进入。）在全省开展少儿朗诵作品征集活动，活动奖项将通过线上评选方式产生。</p>
+            <h3 class="des">三、奖项设置</h3>
+            <p class="second filladd">本次活动分为“文稿类作品”和“朗诵类作品”，每种作品类型分别设有“特等奖”、“一等奖”、“二等奖”、“三等奖”、“最佳人气奖”（访问量），另外活动设有“最佳组织奖”。</p>
+            <h3 class="des">四、参赛要求</h3>
+            <p class="second filladd">（一）参赛人群：全省少年儿童；</p>
+            <p class="second filladd">（二）参赛内容：红色革命诗词、革命历史小故事均可（可原创）；</p>
+            <p class="second filladd">（三）作品形式：文稿或朗诵视频； </p>
+            <p class="second filladd">（四）内容时长：视频作品限时三分钟，所选内容脱稿朗诵，文稿类作品长度不限，体裁不限；</p>
+            <p class="second filladd">（五）朗诵要求：主题突出；语音清晰准确、抑扬顿挫；情感丰富,具有感染力；着装得体，仪态大方。</p>
+            <h3 class="des">五、活动流程</h3>
+            <p class="second filladd">（一）作品征集</p>
+            <p class="second filladd">登录云南省图书馆官方平台“童声诵党”活动专区，选择赛区进行线上报名及投稿；</p>
+            <p class="second filladd">（二）线上评选</p>
+            <p class="second filladd">本次大赛评选方式为线上专家评审，在征集结束后，由专家组成员进行线上作品评审，同期，群众可在活动专区对作品进行观看、分享，助力作品网络人气。</p>
+            <p class="second filladd">（三）结果公示</p>
+            <p class="second filladd">线上评选结束后，将通过活动专区页面进行活动结果公示，并以邮寄形式颁发活动奖品，奖项、奖品设置如下：</p>
+            <span class="ill">1、文稿类奖项：</span>
+            <span class="ill mar">特等奖1名：证书+小度智能学习平板S12一台；</span>
+            <span class="ill mar">一等奖1名：证书+少儿红色经典丛书一套（6本）；</span>
+            <span class="ill mar">二等奖3名：证书+少儿红色经典丛书一套（4本）；</span>
+            <span class="ill mar">三等奖5名：证书+少儿红色经典丛书一套（3本）；</span>
+            <span class="ill mar">“最佳人气奖”1名：证书+少儿红色经典丛书一套（4本）；</span>
+            <span class="ill mar">评选办法：等级奖项为专家评审分数排名依次选取，“最佳人气奖”为获得最高访问量作品的选手。</span>
+            <span class="ill">2、朗诵类奖项： </span>
+            <span class="ill mar">特等奖1名：证书+小度智能学习平板S12一台；</span>
+            <span class="ill mar">一等奖3名：证书+少儿红色经典丛书一套（6本）；</span>
+            <span class="ill mar">二等奖8名：证书+少儿红色经典丛书一套（4本）；</span>
+            <span class="ill mar">三等奖10名：证书+少儿红色经典丛书一套（3本）；</span>
+            <span class="ill mar">“最佳人气奖”1名：证书+少儿红色经典丛书一套（4本）；</span>
+            <span class="ill mar">评选办法：等级奖项为专家评审分数排名依次选取，“最佳人气奖”为获得最高访问量作品的选手。</span>
+            <span class="ill">3、最佳组织奖： </span>
+            <span class="ill mar">最佳组织奖20名：证书。</span>
+            <span class="ill mar">评选办法：根据各单位本次活动的组织情况及参与度进行评选，各个单位组织上报的资源不得低于20个。</span>
+            <!-- <span class="ill">4、幸运观众奖： </span>
+            <span class="ill mar">慧眼识英奖30名：云南省图书馆定制文创帆布包；</span>
+            <span class="ill mar">抽取方法：专家评审结束后，从为文稿类及视频类冠军选手点过赞的用户中，随机抽取。</span> -->
+            <span class="ill mar">本次活动是云南省图书馆为庆祝建党100周年，精心策划、组织的一场全省性少儿朗诵活动，请各图书馆积极参与，精心组织！</span>
+            <span class="ill mar">联系人： 姜洋洋 联系电话：13081942869</span>
+            <span class="ill mar marr">赵老师 联系电话：0871—65510195</span>
+            <div class="button" @click="toPublish">我要投稿</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- wx -->
+    <div class="wx_page" v-if="isMobile">
+      <wxheadbg></wxheadbg>
+      <wxnav :navNum="navNum"></wxnav>
+      <div class="article">
+        <div class="intro">
+          <div class="intro_title">
+            <img src="@/assets/imgwx/hzact/titie1.png" alt />
+          </div>
+          <p  class="first">
+            为热烈庆祝中国共产党建党100周年，开展爱党爱国主义教育，感受革命精神带来的伟大力量，鼓舞群众的阅读热情，营造良好阅读氛围，培养少儿爱国主义情操，通过少儿讴歌100年来中国共产党走过的光辉历程和取得的伟大成就，带动全省人民重新温习党史，汲取奋进力量，云南省图书馆特组织举办“童声诵党”庆祝建党100周年云南省少儿朗诵大赛。请各州（市）、县（区）图书馆认真组织区域内广大读者积极参与活动。
+          </p>
+          <h3 style="text-align:center;color: #E6352B;"> -活动时间- </h3>
+           <p style="text-align:justify;text-indent:0.56rem">征集时间：4月23日-6月15日</p>
+           <p style="text-align:justify;text-indent:0.56rem"> 评选时间：6月下旬</p>
+           <h3 style="text-align:center;color: #E6352B;"> -活动形式- </h3>
+            <p style="text-align:justify;text-indent:0.56rem"> 通过云南省图书馆（1、PC端：登录进入云南省图书馆http://www.ynlib.cn/，官网首页“童声诵党”活动专区。2、微信端：关注“云南省图书馆”微信公众号，从底部菜单栏：数字资源→云图活动栏目→“童声诵党”进入。）在全省开展少儿朗诵作品征集活动，活动奖项将通过线上评选方式产生。</p>
+          <h3 style="text-align:center;color: #E6352B;"> -奖项设置- </h3>
+          <p style="text-align:justify;text-indent:0.56rem;">
+            本次活动分为“文稿类作品”和“朗诵类作品”，每种作品类型分别设有“特等奖”、“一等奖”、“二等奖”、“三等奖”、“最佳人气奖”（访问量），另外活动设有“最佳组织奖”。
+          </p>
+           <h3 style="text-align:center;color: #E6352B;"> -参赛要求- </h3>
+          <p style="text-align:justify;text-indent:0.56rem">
+            （一）参赛人群：全省少年儿童；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            （二）参赛内容：红色革命诗词、革命历史小故事均可（可原创）；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            （三）作品形式：文稿或朗诵视频；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            （四）内容时长：视频作品限时三分钟，所选内容脱稿朗诵，文稿类作品长度不限，体裁不限；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            （五）朗诵要求：主题突出；语音清晰准确、抑扬顿挫；情感丰富,具有感染力；着装得体，仪态大方。
+          </p>
+          <h3 style="text-align:center;color: #E6352B;"> -活动流程- </h3>
+           <p style="text-align:justify;text-indent:0.56rem;">
+            （一）作品征集
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            登录云南省图书馆官方平台“童声诵党”活动专区，选择赛区进行线上报名及投稿；
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            （二）线上评选
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            本次大赛评选方式为线上专家评审，在征集结束后，由专家组成员进行线上作品评审，同期，群众可在活动专区对作品进行观看、分享，助力作品网络人气。
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            （三）结果公示
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem;">
+            线上评选结束后，将通过活动专区页面进行活动结果公示，并以邮寄形式颁发活动奖品，奖项、奖品设置如下：
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            1、文稿类奖项：
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+           特等奖1名：证书+小度智能学习平板S12一台；
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+           一等奖1名：证书+少儿红色经典丛书一套（6本）；
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+           二等奖3名：证书+少儿红色经典丛书一套（4本）；
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+           三等奖5名：证书+少儿红色经典丛书一套（3本）；
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+           “最佳人气奖”1名：证书+少儿红色经典丛书一套（4本）；
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+           评选办法：等级奖项为专家评审分数排名依次选取，“最佳人气奖”为获得最高访问量作品的选手。
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            2、朗诵类奖项：
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem;margin-top:0.1rem">
+            特等奖1名：证书+小度智能学习平板S12一台；
+          </p>
+            <p style="text-align:justify;text-indent:0.56rem">
+            一等奖3名：证书+少儿红色经典丛书一套（6本）；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            二等奖8名：证书+少儿红色经典丛书一套（4本）；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+           三等奖10名：证书+少儿红色经典丛书一套（3本）；
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            “最佳人气奖”1名：证书+少儿红色经典丛书一套（4本）；
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+            评选办法：等级奖项为专家评审分数排名依次选取，“最佳人气奖”为获得最高访问量作品的选手。
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+           3、最佳组织奖：
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            最佳组织奖20名：证书。
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem">
+            评选办法：根据各单位本次活动的组织情况及参与度进行评选，各个单位组织上报的资源不得低于20个。
+          </p>
+           <!-- <p style="text-align:justify;text-indent:0.56rem">
+            4、幸运观众奖：
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+            慧眼识英奖30名：云南省图书馆定制文创帆布包；
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+            抽取方法：专家评审结束后，从为文稿类及视频类冠军选手点过赞的用户中，随机抽取。
+          </p> -->
+           <p style="text-align:justify;text-indent:0.56rem">
+            本次活动是云南省图书馆为庆祝建党100周年，精心策划、组织的一场全省性少儿朗诵活动，请各图书馆积极参与，精心组织！
+          </p>
+           <p style="text-align:justify;text-indent:0.56rem">
+            联系人：姜洋洋 联系电话：13081942869
+          </p>
+          <p style="text-align:justify;text-indent:0.56rem;margin-left:1.1rem">
+           赵老师 联系电话：0871—65510195
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import headbg from './components/pcheader'
+import pcnav from './components/pcnav'
+import wxheadbg from './components/wxheadbg'
+import wxnav from './components/wxnav'
+import wxService from '@/api/wxService'
+var imgURrl = require('@/assets/img/shareicon.png')
+export default {
+  components: {
+    headbg,
+    pcnav,
+    wxheadbg,
+    wxnav
+  },
+  computed: {
+    ...mapGetters(['isMobile', 'publishStatus', 'timeDiff'])
+  },
+  data() {
+    return {
+      navNum: 0
+    }
+  },
+  methods: {
+    toPublish() {
+      var nowTime = this.timeDiff
+      var endTime = new Date('2021/06/15 23:59:59').getTime()
+      console.log('nowTime', nowTime)
+      console.log('endTime', endTime)
+      if (nowTime > endTime) {
+        if (this.isMobile) {
+          this.$toast('投稿已结束')
+        } else {
+          this.$message.info('投稿已结束')
+        }
+        return
+      }
+      // this.$message.info('投稿未开始')
+      this.$router.push({
+        path: '/worksubmit'
+      })
+    }
+  },
+  mounted() {
+    if (this.isMobile) {
+      var shareConfig = {}
+      shareConfig.currentTitle = '“童声诵党”庆祝建党100周年云南省少儿朗诵大赛'
+      shareConfig.share_url = window.location.href
+      shareConfig.currentCover = window.location.origin + '/21tssd/' + imgURrl
+      shareConfig.currentDetail = '庆祝建党100周年，弘扬爱党爱国主义。'
+      // console.log('分享参数：', shareConfig)
+      wxService.setWXConfig(shareConfig)
+    }
+  }
+}
+</script>

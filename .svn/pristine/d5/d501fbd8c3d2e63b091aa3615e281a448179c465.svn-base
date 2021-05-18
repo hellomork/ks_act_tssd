@@ -1,0 +1,453 @@
+<template>
+  <div>
+    <template v-if="fileType==2">
+       <van-uploader
+        v-model="picList"
+       :accept="accept"
+       :preview-image="true"
+       :max-size="max_file_size"
+       :multiple="false"
+       :before-read="beforeRead"
+       :after-read="afterRead"
+       :before-delete="beforeDelete"
+       :deletable='true'
+       :max-count="1">
+        <div class="load">
+          <img src="@/assets/imgwx/ic_load.png" alt />
+          <p>上传作品</p>
+        </div>
+       </van-uploader>
+    </template>
+    <template v-if="fileType == 1">
+      <el-upload
+        :ref="eleUpload"
+        action
+        accept=".jpg,.jpeg,.png"
+        list-type="picture-card"
+        :on-remove="handleRemove"
+        :on-preview="handlePictureCardPreview"
+        :multiple='false'
+        :auto-upload="true"
+        :limit="limit"
+        :http-request="uploadPc"
+        :on-change="beforeUpload"
+        :on-exceed="exceed">
+        <i class="el-icon-plus"></i>
+      </el-upload>
+        <el-dialog :visible.sync="dialogVisible" class="upload-image">
+          <div class="bg" :style="{backgroundImage:'url('+dialogImageUrl+')'}"></div>
+        </el-dialog>
+    </template>
+  </div>
+</template>
+<script type="text/javascript">
+// import defalutImg from '@/assets/img/video.png'
+// import axios from 'axios'
+import $ from 'jquery'
+// import ReadApk from 'readApk'
+// import plupload from 'plupload'
+// 这里使用相对路径，就是该文件相对于static目录的路径
+// window.mOxie = window.moxie = require('../../../static/js/plupload/moxie')
+// require('../../../static/js/plupload/plupload.dev')
+import { mapGetters } from 'vuex'
+export default {
+  name: 'Upload',
+  computed: {
+    ...mapGetters(['userInfo', 'isMobile', 'timeDiff'])
+  },
+  props: {
+    // 预览容器id
+    preImgParentId: {
+      type: String,
+      default: ''
+    },
+    // 文件类型1pc，2-wx
+    fileType: {
+      type: Number,
+      required: true
+    },
+    // 以防一个页面有多个上传按钮-定义不同的按钮名称
+    index: {
+      type: Number,
+      default: 0
+    },
+    Url: null,
+    // 文件上传的最大值
+    max_file_size: {
+      type: String,
+      default: '2048mb'
+    },
+    accept: {
+      type: String,
+      default: ''
+    },
+    multiple: {
+      type: Boolean,
+      default: true
+    },
+    limit: {
+      type: Number,
+      default: 1
+    },
+    // name: {
+    //   type: Number,
+    //   default: 1
+    // },
+    eleUpload: {
+      type: String,
+      default: 'upload'
+    },
+    // 上传有多个添加  按钮
+    subscript: {
+      type: Number,
+      default: 0
+    }
+  },
+  data() {
+    return {
+      toggledisbale: true,
+      // 控制是否显示图片上传+号
+      uploadDisabled: false,
+      // 允许上传图片的数量
+      limitImgNumber: 1,
+      dialogImageUrl: '',
+      dialogVisible: false,
+      picList: [
+
+      ],
+      hasPreImage: false,
+      uploader: null,
+      preUrl: this.Url,
+      imageUrl: '',
+      percentage: 0,
+      jintu: false,
+      pushName: '',
+      ossParams: {},
+      upLoadUrl: '', // 上传地址
+      g_object_name: '', // 文件名
+      fileName: '', // 上传成功后的文件名
+
+      // 视频
+      videoForm: {
+        Video: ''
+      },
+      videoFlag: false,
+      sort: 0,
+      flieListWx: []
+
+    }
+  },
+  methods: {
+    handleRemove(file, fileList) {
+      this.$emit('handleRemove', file.uid, this.subscript)
+      // this.afterRead(fileList)
+      // 手动触发change事件
+      // this.handleFileChange(file, fileList)
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+      this.$emit('handlePicture', file)
+    },
+    // 生成文件名中的随机数
+    random_string: function(len) {
+      len = len || 32
+      var chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678'
+      var maxPos = chars.length
+      var pwd = ''
+      for (let i = 0; i < len; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * maxPos))
+      }
+      return pwd
+    },
+    // 获取文件的后缀名
+    get_suffix: function(filename) {
+      const pos = filename.lastIndexOf('.')
+      let suffix = ''
+      if (pos !== -1) {
+        suffix = filename.substring(pos)
+      }
+      return suffix
+    },
+    // 文件路径+重新命名上传文件名
+    calculateFileName(filename) {
+      var suffix = this.get_suffix(filename)
+      this.g_object_name =
+        this.ossParams.dir +
+        '/' +
+        Date.parse(new Date()) +
+        '_' +
+        this.random_string(6) +
+        suffix
+      return ''
+    },
+    getFileName(filename) {
+      return this.g_object_name
+    },
+    // 设置上传参数-上传
+    set_upload_param(up, filename, ret) {
+      if (filename !== '') {
+        this.get_suffix(filename)
+        this.calculateFileName(filename)
+      }
+      const new_multipart_params = {
+        policy: this.ossParams.policy,
+        OSSAccessKeyId: this.ossParams.accessid,
+        success_action_status: '200', // 让服务端返回200,不然，默认会返回204
+        oss_domain: this.ossParams.oss_domain,
+        signature: this.ossParams.signature,
+        key: this.g_object_name,
+        expire: this.ossParams.expire
+      }
+      const that = this
+      up.setOption({
+        url: that.ossParams.oss_domain,
+        multipart_params: new_multipart_params
+      })
+
+      if (ret) {
+        up.start()
+      }
+    },
+    // 图片预览
+    /* 转化图片为base64预览*/
+    getSignature(callback) {
+      var that = this
+      // this.$apis.getSignature('').then(res => {
+      //   that.ossParams = res.data.data.list[0]
+      //   that.uploadUrl = res.data.data.list[0].host
+      //   callback()
+      // })
+      that.ossParams = that.$store.state.app.uploadParams
+      that.uploadUrl = that.ossParams.oss_domain
+      callback()
+    },
+    afterRead(file, detail) {
+      const that = this
+      // if(this.isMobile){
+      //   that.uid = file.lastModified
+      // }else{
+      //   that.uid = file.file.uid
+      // }
+      // var imglist = []
+      if (this.isMobile) {
+        this.flieListWx = file
+        if (file.length > 1) {
+          file.forEach(item => {
+            this.getSignature(() => {
+              if (that.fileType === 1) {
+                item.status = 'ready'
+              } else {
+                item.status = 'uploading'
+              }
+              item.message = '上传中...'
+              var getSuffix = function(fileName) {
+                var pos = fileName.lastIndexOf('.')
+                var suffix = ''
+                if (pos !== -1) {
+                  suffix = fileName.substring(pos)
+                }
+                return suffix
+              }
+              var filename = Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(item.file.name)
+              // this.ossParams.dir + '/' +
+              console.log('item', item, item.file.name)
+              var formData = new FormData()
+              // 注意formData里append添加的键的大小写
+              formData.append('key', filename) // 存储在oss的文件路径
+              formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
+              formData.append('policy', this.ossParams.policy) // policy
+              formData.append('Signature', this.ossParams.signature) // 签名
+              // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+              formData.append('file', item.file)
+              formData.append('success_action_status', 200) // 成功后返回的操作码
+              var url = this.ossParams.host
+              var fileUrl = this.ossParams.oss_domain + '/' + filename
+              $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                  item.percentage = 100
+                  item.status = 'success'
+                  item.message = '上传成功'
+                  that.$emit('uploadSuccess', fileUrl, item.file, that.subscript)
+                },
+                error: function(data) {
+                  console.log(data)
+                  item.status = 'failed'
+                  item.message = '上传失败'
+                }
+              })
+            })
+          })
+        } else {
+          this.getSignature(() => {
+            if (that.fileType === 1) {
+              file.status = 'ready'
+            } else {
+              file.status = 'uploading'
+            }
+            file.message = '上传中...'
+            var getSuffix = function(fileName) {
+              var pos = fileName.lastIndexOf('.')
+              var suffix = ''
+              if (pos !== -1) {
+                suffix = fileName.substring(pos)
+              }
+              return suffix
+            }
+            var filename = this.ossParams.dir + '/' + Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(file.file.name)
+            console.log(file, file.file.name)
+            var formData = new FormData()
+            // 注意formData里append添加的键的大小写
+            formData.append('key', filename) // 存储在oss的文件路径
+            formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
+            formData.append('policy', this.ossParams.policy) // policy
+            formData.append('Signature', this.ossParams.signature) // 签名
+            // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+            formData.append('file', file.file)
+            formData.append('success_action_status', 200) // 成功后返回的操作码
+            var url = this.ossParams.oss_domain
+            var fileUrl = this.ossParams.oss_domain + '/' + filename
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              async: false,
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                file.percentage = 100
+                file.status = 'success'
+                file.message = '上传成功'
+                that.$emit('uploadSuccess', fileUrl, file.file.uid, that.subscript)
+              },
+              error: function(data) {
+                console.log(data)
+                file.status = 'failed'
+                file.message = '上传失败'
+              }
+            })
+          })
+        }
+      } else {
+        this.getSignature(() => {
+          if (that.fileType === 1) {
+            file.status = 'ready'
+          } else {
+            file.status = 'uploading'
+          }
+          file.message = '上传中...'
+          var getSuffix = function(fileName) {
+            var pos = fileName.lastIndexOf('.')
+            var suffix = ''
+            if (pos !== -1) {
+              suffix = fileName.substring(pos)
+            }
+            return suffix
+          }
+          // this.ossParams.dir + '/' +
+          var filename = Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(file.file.name)
+          console.log(file, file.file.name)
+          var formData = new FormData()
+          // 注意formData里append添加的键的大小写
+          formData.append('key', filename) // 存储在oss的文件路径
+          formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
+          formData.append('policy', this.ossParams.policy) // policy
+          formData.append('Signature', this.ossParams.signature) // 签名
+          // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+          formData.append('file', file.file)
+          formData.append('success_action_status', 200) // 成功后返回的操作码
+          var url = this.ossParams.host
+          var fileUrl = this.ossParams.oss_domain + '/' + filename
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+              file.percentage = 100
+              file.status = 'success'
+              file.message = '上传成功'
+              that.$emit('uploadSuccess', fileUrl, file.file.uid, that.subscript)
+            },
+            error: function(data) {
+              console.log(data)
+              file.status = 'failed'
+              file.message = '上传失败'
+            }
+          })
+        })
+      }
+    },
+    beforeDelete(file, detail) {
+      console.log(['picList', this.picList])
+      this.picList.splice(detail.index, 1)
+      console.log(file, detail)
+      this.$emit('delete', detail, this.subscript)
+    },
+    startUpload() {
+
+    },
+    beforeRead(file) {
+      const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
+      if (!isJPG) {
+        this.$toast('请上传 jpg 或者png格式图片')
+        return false
+      }
+      //  const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
+      //   if (!isJPG) {
+      //   this.$toast('请上传 jpg 或者png格式图片')
+      //   return false
+      //   }
+      // const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
+
+      return true
+    },
+    /** ***
+     * pc上传
+     */
+    beforeUpload(file, fileList) {
+      const isJPG = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png')
+
+      const isLt10M = file.size / 1024 / 1024 < 10
+      // 是否展示图片+号
+      // this.uploadDisabled = fileList.length >= this.limitImgNumber
+      if (!isJPG) {
+        this.$message.error('上传头像图片格式不对，只支持jpg，png!')
+      }
+      if (!isLt10M) {
+        this.$message.error('上传头像图片大小不能超过 10MB!')
+      }
+      return isJPG && isLt10M
+    },
+    exceed(files, fileList) {
+      this.$message.error('超出限制，只能选1张图片，请删除后再添加')
+    },
+    // 覆盖默认的上传行为，自定义上传的实现
+    uploadPc(file) {
+      this.afterRead(file)
+    },
+    submitFile() {
+      this.$refs.eleUpload.submit()
+    }
+  },
+  created() {
+    // this.getSignature()
+  },
+  mounted() {
+    // this.initUpload()
+  }
+}
+</script>
+<style lang="scss" scoped>
+</style>

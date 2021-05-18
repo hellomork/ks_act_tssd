@@ -1,0 +1,206 @@
+import service from '@/http/HttpInterceptor.js'
+import API_LIST from '@/api/config'
+// import store from '@/store'
+// import AMap from 'AMap'
+/**
+ * 获取当前位置--经纬度--城市名称
+ *
+ */
+// export const getMapData = (callback) => {
+//   if (store.state.app.cityName !== null) {
+//     callback()
+//     return
+//   }
+//   const map = new AMap.CitySearch()
+//   map.getLocalCity((status, result) => {
+//     if (status === 'complete' && result.info === 'OK') {
+//       if (result && result.city && result.bounds) {
+//         store.commit('SET_MAPDATA', result)
+//         callback(result)
+//       }
+//     }
+//   })
+// }
+/**
+ * 录入访客信息
+ * @params {*} isApp
+ * @params {*} visitTitle
+ * @params {*} visitorCity
+ * @params {*} visitorLatitude
+ * @params {*} visitorLongitude
+ */
+export const insertVistor = (params) => {
+  return service({
+    url: API_LIST.visit.insert,
+    method: 'get',
+    params: params
+  })
+}
+// old
+export const insertVistorOld = (params) => {
+  return service({
+    url: API_LIST.visit.insertOld,
+    method: 'post',
+    data: params
+  })
+}
+/**
+ * 获取分享参数
+ * @params {*} url--当前页面完整的url
+ */
+export const getShareParams = (params) => {
+  return service({
+    url: API_LIST.common.share,
+    method: 'get',
+    params: params
+  })
+}
+export const getSysTime = (params) => {
+  return service({
+    url: API_LIST.user.sysTime,
+    method: 'get',
+    params: params
+  })
+}
+
+export const getList = (params) => {
+  return service({
+    url: API_LIST.act.list,
+    method: 'get',
+    params: params
+  })
+}
+export const getDetail = (params) => {
+  return service({
+    url: API_LIST.act.actDetail,
+    method: 'get',
+    params: params
+  })
+}
+export const getReaderCount = (params) => {
+  return service({
+    url: API_LIST.act.readerCount,
+    method: 'post',
+    data: params
+  })
+}
+// 获取统计数据
+export const getTotalNum = (params) => {
+  return service({
+    url: API_LIST.act.totalNum,
+    method: 'get',
+    params: params
+  })
+}
+// 专家列表
+export const getSpecialList = (params) => {
+  return service({
+    url: API_LIST.act.special,
+    method: 'get',
+    params: params
+  })
+}
+// 专家详情 userCode
+export const getSpecialDetail = (params) => {
+  return service({
+    url: API_LIST.act.specialDetail,
+    method: 'get',
+    params: params
+  })
+}
+// 文件上传
+export const uploadWorks = (params) => {
+  return service({
+    url: API_LIST.act.upload,
+    method: 'post',
+    data: params
+  })
+}
+// 后台获取列表
+export const getBackList = (params) => {
+  return service({
+    url: API_LIST.backEnd.list,
+    method: 'get',
+    params: params
+  })
+}
+// 后台详情
+export const getBackDetail = (params) => {
+  return service({
+    url: API_LIST.backEnd.detail,
+    method: 'get',
+    params: params
+  })
+}
+// 后台编辑
+export const backUpdate = (params) => {
+  return service({
+    url: API_LIST.backEnd.update,
+    method: 'post',
+    data: params
+  })
+}
+// 后台删除
+export const backDelete = (params) => {
+  return service({
+    url: API_LIST.backEnd.delete,
+    method: 'post',
+    data: params
+  })
+}
+// 后台审核为精选
+export const handlechoose = (params) => {
+  return service({
+    url: API_LIST.backEnd.check,
+    method: 'post',
+    data: params
+  })
+}
+// 后台入围或待定
+export const backCheck = (params) => {
+  return service({
+    url: API_LIST.backEnd.boutique,
+    method: 'post',
+    data: params
+  })
+}
+// 取消待定与入围
+export const deleteBoutique = (params) => {
+  return service({
+    url: API_LIST.backEnd.deleteBoutique,
+    method: 'post',
+    data: params
+  })
+}
+// 用户点赞
+// ocCode
+// opClientType：固定值（CLIENT_WX）
+// operateCode
+export const userVote = (params) => {
+  return service({
+    url: API_LIST.user.vote,
+    method: 'post',
+    data: params
+  })
+}
+export default Object.assign({
+  // getMapData,
+  getShareParams,
+  getSysTime,
+  getList,
+  getDetail,
+  getSpecialList,
+  getSpecialDetail,
+  uploadWorks,
+  getBackList,
+  getBackDetail,
+  backUpdate,
+  handlechoose,
+  backCheck,
+  deleteBoutique,
+  userVote,
+  getTotalNum,
+  backDelete,
+  getReaderCount,
+  insertVistorOld
+})

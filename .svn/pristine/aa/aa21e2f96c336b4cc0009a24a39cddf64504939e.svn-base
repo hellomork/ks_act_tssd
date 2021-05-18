@@ -1,0 +1,18 @@
+var jsonData = {
+  'list': [
+    {
+      'name': '投稿攻略 | 庆祝建党100周年云南省少儿朗诵大赛投稿攻略请收好~',
+      'unit': '云南省图书馆',
+      'dateTime': '2020-05-11',
+      'linkPath': 'https://mp.weixin.qq.com/s/7wCX3nqVD6ssAI9KrwJdEg'
+    },
+    {
+      'name': '童声诵党 | 庆祝建党100周年，云南省少儿朗诵大赛正式启动',
+      'unit': '云南省图书馆',
+      'dateTime': '2020-04-23',
+      'linkPath': 'https://mp.weixin.qq.com/s/S1iyPCBnJsP5ylcK4elhbA'
+    }
+
+  ]
+}
+export default jsonData

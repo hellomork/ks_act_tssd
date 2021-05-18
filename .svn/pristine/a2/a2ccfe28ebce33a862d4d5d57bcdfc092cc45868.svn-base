@@ -1,0 +1,109 @@
+<template>
+  <div class="whole">
+    <!-- pc -->
+    <div class="mediareport" v-if="!isMobile">
+      <headbg></headbg>
+      <pcnav :navNum="navNum"></pcnav>
+      <div class="contain">
+        <div class="act-container">
+          <div class="special">
+            <div class="pic">
+              <img src="@/assets/img/hzact/news.png" alt />
+            </div>
+            <ul class="news">
+              <li class="newslist" v-for="(item,index) in list.list" :key="index" @click="toPath(item.linkPath, 1)">
+                <h3>{{item.name}}</h3>
+                <div class="editor">
+                  <span>作者：{{item.unit}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <span>发布时间：{{item.dateTime}}</span>
+                </div>
+              </li>
+            </ul>
+            <!-- <div class="pages" style="padding-top:51px;">
+              <el-pagination background layout="prev, pager, next" :total="100"></el-pagination>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- wx -->
+    <div class="wx_page" v-if="isMobile">
+      <wxheadbg></wxheadbg>
+      <wxnav :navNum="navNum"></wxnav>
+      <!-- <div class="article">
+        <div class="intro">
+          <div class="intro_title">
+            <img src="@/assets/imgwx/hzmovie/title_introwx.png" alt />
+          </div>
+        </div>
+      </div> -->
+      <div class="news_page">
+        <div class="intro_title1">
+            <img src="@/assets/imgwx/hzmovie/title_new.png" alt />
+          </div>
+          <ul class="news">
+            <li class="newslist" v-for="(item,index) in list.list" :key="index" @click="toPath(item.linkPath, 2)">
+                <h3>{{item.name}}</h3>
+                <div class="editor">
+                  <span>作者：{{item.unit}}</span><span>{{item.dateTime}}</span>
+                </div>
+            </li>
+             <!-- <li class="newslist">
+                <h3>2020“美好生活”杭州街头摄影节活动开始啦,快来报名吧</h3>
+                <div class="editor">
+                  <span>发布人：杭州市文化馆</span><span>2020-08-06</span>
+                </div>
+            </li> -->
+          </ul>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import headbg from './components/pcheader'
+import pcnav from './components/pcnav'
+import wxheadbg from './components/wxheadbg'
+import wxnav from './components/wxnav'
+import Datanew from '../../api/Datanew'
+import wxService from '@/api/wxService'
+var imgURrl = require('../../assets/img/shareicon.png')
+export default {
+  components: {
+    headbg,
+    pcnav,
+    wxheadbg,
+    wxnav
+  },
+  computed: {
+    ...mapGetters(['isMobile', 'publishStatus'])
+  },
+  data() {
+    return {
+      navNum: 1,
+      list: [
+      ]
+    }
+  },
+  methods: {
+    toPath(linkPath, flg) {
+      if (flg === 1) {
+        window.open(linkPath)
+      } else {
+        window.location.href = linkPath
+      }
+    }
+  },
+  mounted() {
+    // debugger
+    this.list = Datanew
+    var shareConfig = {}
+    shareConfig.currentTitle = '“童声诵党”庆党100周年昆山市少儿朗诵大赛'
+    shareConfig.share_url = window.location.href
+    shareConfig.currentCover = window.location.origin + '/21tssd/' + imgURrl
+    shareConfig.currentDetail = '新闻快讯'
+    // console.log('分享参数：', shareConfig)
+    wxService.setWXConfig(shareConfig)
+  }
+}
+</script>

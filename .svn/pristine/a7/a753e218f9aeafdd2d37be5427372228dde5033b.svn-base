@@ -1,0 +1,726 @@
+<template>
+  <div class="whole">
+    <div class="articlecontribute" v-if="!isMobile">
+      <div class="headerbg"></div>
+      <div class="below">
+        <div class="act-container">
+          <div class="list">
+            <h3>信息填写</h3>
+            <!-- 上传第一个作品 -->
+             <div class="addxing">
+              <div class="name xingxing1">
+                <span>类型</span>
+                <input
+                  maxlength="11"
+                  style="width: 430px"
+                  type="text"
+                  v-model="ocWrite"
+                />
+              </div>
+            </div>
+            <div class="addxing">
+              <div class="name xingxing1">
+                <span>作者姓名</span>
+                <input
+                  maxlength="11"
+                  style="width: 430px"
+                  type="text"
+                  v-model="ocWrite"
+                />
+              </div>
+              <div class="name xingxing2">
+                <span style="margin-left: 50px">作者电话</span>
+                <input
+                  maxlength="11"
+                  style="width: 430px"
+                  type="text"
+                  v-model="mobile"
+                />
+              </div>
+            </div>
+            <div class="addxing">
+              <div class="name xingxing1">
+                <span class="county">选送单位</span>
+                <el-select v-model="company" placeholder="请选择">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="name xingxing2">
+                <span style="margin-left: 50px">年龄</span>
+                <input
+                  maxlength="18"
+                  style="width: 250px"
+                  type="text"
+                  v-model="age"
+                />
+              </div>
+              <div class="name">
+                <span style="margin-left: 50px">辅导老师</span>
+                <input
+                  maxlength="11"
+                  style="width: 200px"
+                  type="text"
+                  v-model="tech"
+                />
+              </div>
+            </div>
+            <div class="addxing">
+              <div class="name">
+                <span>辅导老师电话</span>
+                <input
+                  maxlength="11"
+                  style="width: 230px"
+                  type="text"
+                  v-model="tel"
+                />
+              </div>
+              <div class="name">
+                <span style="margin-left: 50px">所在学校</span>
+                <input
+                  maxlength="11"
+                  style="width: 330px"
+                  type="text"
+                  v-model="school"
+                />
+              </div>
+            </div>
+            <div
+              class="list1"
+              v-for="(item, index) in kaOperateContentList"
+              :key="item.indexId"
+            >
+              <div class="title">作品{{ index + 1 }}</div>
+              <div class="name xingxing1">
+                <span>作品名称</span>
+                <input maxlength="20" type="text" v-model="item.ocName" />
+              </div>
+              <div class="describle">
+                <span>作品介绍</span>
+                <textarea
+                  maxlength="100"
+                  v-model="item.ocComposingWords"
+                ></textarea>
+              </div>
+              <div class="uploading" style="display: inline-block">
+                <span class="xingxing4"> 上传作品</span>
+                <!-- 上传状态 -->
+                <!-- <div class="pic" v-if="success=1">
+                  <div class="picc">
+                    <img src="@/assets/img/ic_uploading.png" alt />
+                  </div>
+                  <p>点击上传</p>
+                </div> -->
+                <div style="padding-left: 20px; float: left">
+                  <upload
+                    @uploadSuccess="uploadSuccess"
+                    @handleRemove="handleRemove"
+                    :index="item.indexId"
+                    :subscript="index"
+                    :fileType="1"
+                    :ref="'upload_' + item.indexId"
+                  ></upload>
+                </div>
+              </div>
+              <div class="yaoqiu">
+                <button
+                  class="btn1"
+                  @click="add"
+                  v-if="index == kaOperateContentList.length - 1"
+                >
+                  继续添加
+                </button>
+                <button
+                  class="btn2"
+                  @click="del(index)"
+                  v-if="kaOperateContentList.length > 1"
+                >
+                  删除
+                </button>
+              </div>
+            </div>
+            <div class="commit" @click="commit">提交</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="upload11" v-if="isMobile">
+      <ul>
+        <div class="name">
+          <van-field
+            v-model.trim="ocWrite"
+            required
+            label="姓名"
+            placeholder="请填写姓名"
+            input-align="right"
+            maxlength="10"
+          />
+        </div>
+        <div class="name">
+          <van-field
+            v-model.trim="mobile"
+            required
+            label="联系方式"
+            placeholder="请填写手机号"
+            input-align="right"
+            maxlength="11"
+          />
+        </div>
+        <div class="name">
+          <van-field
+            readonly
+            clickable
+            required
+            name="picker"
+            :value="company"
+            input-align="right"
+            label="组织单位"
+            placeholder="点击选择区县"
+            @click="showPicker = true"
+          />
+          <van-popup v-model="showPicker" position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="columns"
+              @confirm="onConfirm"
+              @cancel="showPicker = false"
+            />
+          </van-popup>
+        </div>
+          <div class="name">
+          <van-field
+            v-model.trim="age"
+            label="年龄"
+            required
+            placeholder="请填写"
+            input-align="right"
+            maxlength="18"
+          />
+        </div>
+        <div class="name">
+          <van-field
+            v-model.trim="tech"
+            label="老师电话"
+            placeholder="请填写老师"
+            input-align="right"
+            maxlength="11"
+          />
+        </div>
+        <div class="name">
+          <van-field
+            v-model.trim="school"
+            label="所在学校"
+            placeholder="请填写学校"
+            input-align="right"
+            maxlength="18"
+          />
+        </div>
+        <!-- 开始上传 -->
+        <li v-for="(item, index) in kaOperateContentList" :key="item.indexId">
+          <h3 style="margin-top: 1rem">【 作品{{ index + 1 }} 】</h3>
+          <div class="name">
+            <van-field
+              v-model.trim="item.ocName"
+              required
+              label="作品名称"
+              placeholder="请填写名称"
+              input-align="right"
+              maxlength="20"
+            />
+          </div>
+          <div class="brief">
+            <van-field
+              rows="5"
+              type="textarea"
+              v-model.trim="item.ocComposingWords"
+              label="作品介绍"
+              maxlength="200"
+              placeholder="请填写作品介绍"
+            />
+          </div>
+          <upload
+            :fileType="2"
+            @uploadSuccess="uploadSuccess"
+            @delete="deleteWx"
+            :subscript="index"
+            :ref="'upload_' + item.indexId"
+            :name="index"
+          ></upload>
+          <div
+            class="add"
+            @click="del(index)"
+            v-if="kaOperateContentList.length > 1"
+          >
+            删除
+          </div>
+        </li>
+        <!-- 预览显示 -->
+        <!-- <li>
+            <h3>【 作品一 】</h3>
+            <div class="load2">
+              <img class="img1" src="@/assets/img/demo.jpg" alt />
+              <img class="img2" src="@/assets/imgwx/ic_off.png" alt />
+            </div>
+            <input class="btn1" type="text" />
+            <input class="btn2" type="text" />
+          </li> -->
+      </ul>
+      <div class="add" @click="add">继续添加</div>
+      <div class="fix" @click="wxCommit">提交作品</div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import { checkMobile } from '@/utils/index'
+import upload from '@/components/Upload/index'
+export default {
+  components: {
+    upload
+  },
+  computed: {
+    ...mapGetters(['userInfo', 'isMobile', 'timeDiff'])
+  },
+  data() {
+    return {
+      options: [
+        {
+          value: '上城区文化馆',
+          label: '上城区文化馆'
+        },
+        {
+          value: '下城区文化馆',
+          label: '下城区文化馆'
+        },
+        {
+          value: '西湖区文化馆',
+          label: '西湖区文化馆'
+        },
+        {
+          value: '江干区文化馆',
+          label: '江干区文化馆'
+        },
+        {
+          value: '拱墅区文化馆',
+          label: '拱墅区文化馆'
+        },
+        {
+          value: '滨江区文化馆',
+          label: '滨江区文化馆'
+        },
+        {
+          value: '萧山区文化馆',
+          label: '萧山区文化馆'
+        },
+        {
+          value: '余杭区文化馆',
+          label: '余杭区文化馆'
+        },
+        {
+          value: '富阳区文化馆',
+          label: '富阳区文化馆'
+        },
+        {
+          value: '临安区文化馆',
+          label: '临安区文化馆'
+        },
+        {
+          value: '桐庐县文化馆',
+          label: '桐庐县文化馆'
+        },
+        {
+          value: '建德市文化馆',
+          label: '建德市文化馆'
+        },
+        {
+          value: '淳安县文化馆',
+          label: '淳安县文化馆'
+        },
+        {
+          value: '钱塘新区文化馆',
+          label: '钱塘新区文化馆'
+        },
+        {
+          value: '其他',
+          label: '其他'
+        }
+      ],
+      columns: [
+        '上城区文化馆',
+        '下城区文化馆',
+        '西湖区文化馆',
+        '江干区文化馆',
+        '拱墅区文化馆',
+        '滨江区文化馆',
+        '萧山区文化馆',
+        '余杭区文化馆',
+        '富阳区文化馆',
+        '临安区文化馆',
+        '桐庐县文化馆',
+        '建德市文化馆',
+        '淳安县文化馆',
+        '钱塘新区文化馆',
+        '其他'
+      ],
+      showPicker: false,
+      company: '',
+      // urlList: [],
+      ocWrite: '',
+      mobile: '',
+      tech: '',
+      tel: '',
+      age: '',
+      school: '',
+      cardId: '',
+      // imgArr:[],
+      kaOperateContentList: [
+        {
+          ocCover: '',
+          ocName: '',
+          ocComposingWords: '',
+          indexId: new Date().getTime(),
+          operateCode: 'ee0763cb-7cbf-11eb-8578-7cd30ae45c70-1',
+          urlList: [],
+          imgArr: []
+        }
+      ]
+    }
+  },
+  methods: {
+    onConfirm(value) {
+      this.company = value
+      this.showPicker = false
+    },
+    add() {
+      // if (this.kaOperateContentList.length !== this.urlList.length) {
+      //   if (this.isMobile) {
+      //     this.$toast('请选择作品图片/等待图片上传完毕')
+      //     return
+      //   } else {
+      //     this.$message.error('请选择作品图片/等待图片上传完毕')
+      //     return
+      //   }
+      // }
+      // this.urlList = []
+      const item = {
+        ocCover: '',
+        ocName: '',
+        ocComposingWords: '',
+        indexId: new Date().getTime(),
+        operateCode: 'ee0763cb-7cbf-11eb-8578-7cd30ae45c70-1',
+        urlList: [],
+        imgArr: []
+      }
+      this.kaOperateContentList.push(item)
+      // this.$nextTick(() => {
+      //   // this.$refs['upload_' + item.indexId][0].submitFile()
+      // })
+    },
+    del(index) {
+      console.log('del', index)
+      // if (this.kaOperateContentList[index].urlList.length === (this.kaOperateContentList[index].kaOperateContentList.length + 1)) {
+      //   this.urlList.splice(index, 1)
+      // } else {
+      //   // 没上传完点删除
+      //   if (this.urlList[index]) {
+      //     this.urlList.splice(index, 1)
+      //   }
+      // }
+      this.kaOperateContentList.splice(index, 1)
+    },
+    deleteWx(detail, subscript) {
+      this.kaOperateContentList[subscript].urlList.splice(detail.index, 1)
+    },
+    // pc 组图删除
+    handleRemove(uid, subscript) {
+      this.kaOperateContentList[subscript].imgArr.forEach((item, index) => {
+        if (uid === item.uid) {
+          this.kaOperateContentList[subscript].imgArr.splice(index, 1)
+        }
+      })
+      this.kaOperateContentList[subscript].urlList = []
+      for (
+        var i = 0;
+        i < this.kaOperateContentList[subscript].imgArr.length;
+        i++
+      ) {
+        this.kaOperateContentList[subscript].urlList.push(
+          this.kaOperateContentList[subscript].imgArr[i].url
+        )
+      }
+      console.log('this.urlList2', this.kaOperateContentList[subscript].urlList)
+    },
+    // 上传url
+    uploadSuccess(url, uid, index) {
+      console.log('index', index)
+      var fileData = { uid: uid, url: url }
+      this.kaOperateContentList[index].imgArr.push(fileData)
+      // 上传成功给封面赋值
+      this.kaOperateContentList[index].urlList.push(url)
+      console.log('this.urlList', this.kaOperateContentList[index].urlList)
+      // if (this.isMobile) {
+      //   this.kaOperateContentList[this.urlList.length - 1].ocCover = this.urlList[this.urlList.length - 1]
+      // }
+      this.$forceUpdate()
+    },
+    commit() {
+      const _this = this
+      // 上传前验证信息- 触发上传
+      // var flag = false // 判断是否图片已上传完成
+      // const _this = this
+      // var nowTime = _this.timeDiff
+      // var endTime = new Date('2020/11/10 23:59:59').getTime()
+      // console.log('nowTime', nowTime)
+      // console.log('endTime', endTime)
+      // if (nowTime > endTime) {
+      //   if (_this.isMobile) {
+      //     _this.$toast('投稿已结束')
+      //   } else {
+      //     _this.$message.info('投稿已结束')
+      //   }
+      //   return
+      // }
+      for (let i = 0; i < this.kaOperateContentList.length; i++) {
+        this.kaOperateContentList[i].ocWrite = this.ocWrite
+        this.kaOperateContentList[i].mobile = this.mobile
+        this.kaOperateContentList[i].tech = this.tech
+        this.kaOperateContentList[i].company = this.company
+        this.kaOperateContentList[i].age = this.age
+        this.kaOperateContentList[i].tel = this.tel
+        this.kaOperateContentList[i].school = this.school
+        // this.kaOperateContentList[i].operateCode = 'ee0763cb-7cbf-11eb-8578-7cd30ae45c70-1'
+        const item = this.kaOperateContentList[i]
+        if (item.ocWrite === '') {
+          this.$message.error('请填写作品的姓名')
+          return
+        } else if (
+          item.mobile === '' ||
+          item.mobile === undefined ||
+          !checkMobile(item.mobile)
+        ) {
+          this.$message.error('手机号码不正确')
+          return
+        } else if (item.company === '' || item.company === undefined) {
+          this.$message.error('组织单位不能为空')
+          return
+        } else if (
+          item.age === '' ||
+          item.age === undefined ||
+          item.age > 16
+        ) {
+          this.$message.error('限制年龄16周岁以下投稿')
+          return
+        } else if (item.ocName === '') {
+          this.$message.error('请填写作品' + (i + 1) + '的作品名称')
+          return
+        }
+        //  else if (item.ocComposingWords === '') {
+        //   this.$message.error('请填写作品' + (i + 1) + '的作品介绍')
+        //   return
+        // }
+      }
+      //  if (this.urlList.length===0) {
+      // // if (this.kaOperateContentList.length < this.urlList.length) {
+
+      //   this.$message.error('请选择作品相关图片')
+      // } else {
+      for (let i = 0; i < this.kaOperateContentList.length; i++) {
+        this.kaOperateContentList[i].ocCover = this.kaOperateContentList[i].urlList.toString()
+        if (this.kaOperateContentList[i].ocCover === '') {
+          this.$message.error('请选择作品' + (i + 1) + '的相关图片')
+          return
+        }
+      }
+      if (!this.isMobile) {
+        this.$apis.uploadWorks(this.kaOperateContentList).then((res) => {
+          if (res.data.status.returnCode === 100) {
+            _this.$message.success('上传成功！')
+            _this.$router.push({
+              path: '/picshow'
+            })
+          } else {
+            _this.$message.error('上传失败！')
+            setTimeout(() => {
+              window.location.reload()
+            }, 1500)
+          }
+        })
+      }
+      // }
+    },
+    wxCommit() {
+      const _this = this
+      // var nowTime = _this.timeDiff
+      // var endTime = new Date('2020/11/10 23:59:59').getTime()
+      // console.log('nowTime', nowTime)
+      // console.log('endTime', endTime)
+      // if (nowTime > endTime) {
+      //   if (_this.isMobile) {
+      //     _this.$toast('投稿已结束')
+      //   } else {
+      //     _this.$message.info('投稿已结束')
+      //   }
+      //   return
+      // }
+      for (let i = 0; i < _this.kaOperateContentList.length; i++) {
+        this.kaOperateContentList[i].ocWrite = this.ocWrite
+        this.kaOperateContentList[i].mobile = this.mobile
+        this.kaOperateContentList[i].tech = this.tech
+        this.kaOperateContentList[i].company = this.company
+        this.kaOperateContentList[i].age = this.age
+        this.kaOperateContentList[i].tel = this.tel
+        this.kaOperateContentList[i].school = this.school
+        const item = this.kaOperateContentList[i]
+        if (item.ocWrite === '') {
+          _this.$toast('请填写作品的姓名')
+          return
+        } else if (
+          item.mobile === '' ||
+          item.mobile === undefined ||
+          !checkMobile(item.mobile)
+        ) {
+          _this.$toast('作品手机号码不正确')
+          return
+        } else if (item.company === '' || item.company === undefined) {
+          _this.$toast('组织单位不能为空')
+          return
+        } else if (
+          item.age === '' ||
+          item.age === undefined ||
+          item.age > 16
+        ) {
+          _this.$toast('限制年龄16周岁以下投稿')
+          return
+        } else if (item.ocName === '') {
+          _this.$toast('请填写作品' + (i + 1) + '的作品名称')
+          return
+        }
+        // else if (item.ocComposingWords === '') {
+        //    _this.$toast('请填写作品' + (i + 1) + '的作品介绍')
+        //   return
+        // }
+        // this.kaOperateContentList[i].ocCover = this.urlList[i]
+      }
+      for (let i = 0; i < this.kaOperateContentList.length; i++) {
+        this.kaOperateContentList[i].ocCover = this.kaOperateContentList[i].urlList.toString()
+        if (this.kaOperateContentList[i].ocCover === '') {
+          _this.$toast('请选择作品' + (i + 1) + '的相关图片')
+          return
+        }
+      }
+      this.$apis.uploadWorks(this.kaOperateContentList).then((res) => {
+        if (res.data.status.returnCode === 100) {
+          _this.$toast.success('上传成功！')
+          _this.$router.push({
+            path: '/picshow'
+          })
+        } else {
+          _this.$toast.fail('上传失败！')
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        }
+      })
+    }
+  },
+  mounted() {
+    // const item = {
+    //   ocCover: '',
+    //   ocName: '',
+    //   ocComposingWords: '',
+    //   indexId: new Date().getTime(),
+    //   operateCode: 'ee0763cb-7cbf-11eb-8578-7cd30ae45c70-1'
+    // }
+    // this.kaOperateContentList.push(item)
+    // this.$nextTick(() => {
+    //   this.$refs['upload_' + item.indexId][0].submitFile()
+    // })
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+// 作品投稿页面
+.addxing {
+  display: flex;
+  padding: 0 60px;
+  .name {
+    height: 50px;
+    margin-top: 30px;
+
+    span {
+      margin-top: 17px;
+      float: left;
+      color: #666666;
+
+      // display: inline-block;
+    }
+
+    input {
+      float: left;
+      margin-left: 15px;
+      width: 990px;
+      padding-left: 22px;
+      height: 50px;
+      background-color: #eeeeee;
+      border: 1px solid #e6e6e6;
+    }
+  }
+}
+.xingxing1 {
+  position: relative;
+  &::before {
+    content: '*';
+    position: absolute;
+    left: -10px;
+    top: 20px;
+    color: red;
+  }
+}
+.xingxing2 {
+  position: relative;
+  &::before {
+    content: '*';
+    position: absolute;
+    left: 40px;
+    top: 20px;
+    color: red;
+  }
+}
+.xingxing3 {
+  position: relative;
+  &::before {
+    content: '*';
+    position: absolute;
+    left: -10px;
+    top: 50px;
+    color: red;
+  }
+}
+.xingxing4 {
+  position: relative;
+  &::before {
+    content: '*';
+    position: absolute;
+    left: -10px;
+    top: 50px;
+    color: red;
+  }
+}
+
+.hideAdd {
+  .el-upload--picture-card {
+    display: none !important;
+  }
+}
+.upload11 {
+  .name {
+    border-bottom: 0.01rem solid #eeeeee;
+  }
+}
+</style>

@@ -1,0 +1,283 @@
+<template>
+  <div class="pc_headerpage">
+    <div class="headbg">
+      <div class="act-container">
+        <div class="worksubmit" @click="toPublish">
+          <div class="center">
+            <span>我要投稿</span>
+            <!-- <img src="@/assets/img/hzact/btn.png" alt /> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--  -->
+    <!-- pc分享返回顶部 -->
+    <div class="func">
+      <div class="wx">
+        <div class="sharepc" @mouseover="showQrcode()" @mouseout="hideQrcode" style="cursor:pointer;">
+          <img src="@/assets/img/hzmovie/share.png" alt />
+        </div>
+        <div id="code" class="code" v-show="qrcodeFlag">
+          <div id="qrcode" class="qrcode" ref="qrcode"></div>
+        </div>
+      </div>
+      <div class="sharepc1" v-if="gotop" @click="goUp" style="cursor:pointer;">
+        <img src="@/assets/img/hzmovie/backtop.png" alt />
+      </div>
+    </div>
+
+    <!--pc 通用的分享置顶图片 -->
+    <!-- <div class="commonshare">
+      <div class="enterLogin" @click="enterLogin">
+        <img src="@/assets/img/enterLogin.png" alt="">
+      </div>
+      <div class="wx">
+        <div class="weishare" @mouseover="showQrcode()" @mouseout="hideQrcode">
+          <div class="pic">
+            <img src="@/assets/img/wechat.png" alt />
+          </div>
+          <p>微信分享</p>
+        </div>
+        <div id="code" class="code" v-show="qrcodeFlag">
+          <div id="qrcode" class="qrcode" ref="qrcode"></div>
+        </div>
+      </div>
+      <div class="back_top" @click="goUp"  v-if="gotop">
+        <div class="cover">
+          <img src="@/assets/img/more1.png" alt />
+        </div>
+        <p>返回顶部</p>
+      </div>
+    </div> -->
+  </div>
+</template>
+<script>
+import QRCode from 'qrcodejs2'
+import { mapGetters } from 'vuex'
+export default {
+  data() {
+    return {
+      gotop: false,
+      qrcodeFlag: false,
+      url: window.location.href
+      // item: {
+      //   visitNum: null,
+      //   voteNum: null
+      // }
+    }
+  },
+  computed: {
+    ...mapGetters(['isMobile', 'userInfo', 'publishStatus', 'timeDiff'])
+  },
+  methods: {
+    // toPublish() {
+    //   if (this.publishStatus * 1 === 0) {
+    //     this.$router.push({
+    //       path: '/worksubmit'
+    //     })
+    //   } else {
+    //     if (this.isMobile) {
+    //       this.$toast.info('投稿已结束')
+    //     } else {
+    //       this.$message.info('投稿已结束')
+    //     }
+    //   }
+    // },
+    toPublish() {
+      var nowTime = this.timeDiff
+      var endTime = new Date('2021/06/15 23:59:59').getTime()
+      console.log('nowTime', nowTime)
+      console.log('endTime', endTime)
+      if (nowTime > endTime) {
+        if (this.isMobile) {
+          this.$toast('投稿已结束')
+        } else {
+          this.$message.info('投稿已结束')
+        }
+        return
+      }
+      this.$router.push({
+        path: '/worksubmit'
+      })
+      // this.$message.info('投稿未开始')
+    },
+    enterLogin() {
+      this.$router.push({
+        path: '/login'
+      })
+    },
+    handleScroll() {
+      const scrolltop =
+        document.documentElement.scrollTop || document.body.scrollTop
+      scrolltop > 500 ? (this.gotop = true) : (this.gotop = false)
+    },
+    goUp() {
+      let top = document.documentElement.scrollTop || document.body.scrollTop
+      // 实现滚动效果
+      const timeTop = setInterval(() => {
+        document.body.scrollTop = document.documentElement.scrollTop = top -= 50
+        if (top <= 0) {
+          clearInterval(timeTop)
+        }
+      }, 10)
+    },
+    showQrcode() {
+      var url = this.url
+      this.$refs.qrcode.innerHTML = ''
+      this.qrcodeFlag = true
+      this.creatQrcode(url)
+      console.log(url)
+    },
+    hideQrcode() {
+      this.qrcodeFlag = false
+      this.$refs.qrcode.innerHTML = ''
+    },
+    creatQrcode(text) {
+      this.qrcode = new QRCode('qrcode', {
+        width: 80,
+        height: 80,
+        text: text, // 二维码地址
+        colorDark: '#000',
+        colorLight: '#fff'
+      })
+    }
+    // getTotalNum() {
+    //   var parm = {}
+    //   parm.operateCode =
+    //     'ee0763cb-7cbf-11eb-8578-7cd30ae45c70-1'
+    //   parm.ocName = '“童声诵党”庆祝建党100周年云南省少儿朗诵大赛'
+    //   var _this = this
+    //   this.$apis.getTotalNum(parm).then(res => {
+    //     console.log(res)
+    //     if (res.data.status.returnCode === 100) {
+    //       _this.item = res.data.data.list[0]
+    //     }
+    //   })
+    // }
+  },
+  mounted() {
+    // 此处true需要加上，不加滚动事件可能绑定不成功
+    window.addEventListener('scroll', this.handleScroll, true)
+  },
+  created() {
+    // this.getTotalNum()
+  }
+}
+</script>
+<style lang="scss" scoped>
+.func {
+  position: fixed;
+  right: 143px;
+  bottom: 500px;
+  width: 74px;
+  height: 94px;
+  z-index: 99;
+  .sharepc {
+    width: 100%;
+    height: 74px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .sharepc1 {
+    margin-top: 20px;
+    width: 100%;
+    height: 74px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+.code {
+  position: absolute;
+  width: 74px;
+  height: 74px;
+  left: -80px;
+  top: 0px;
+  padding: 5px;
+  background-color: #ffffff;
+  .qrcode {
+    width: 70px;
+    height: 70px;
+    position: relative;
+    top: -7px;
+    right: 10px;
+  }
+}
+.wx {
+  position: relative;
+}
+.pc_headerpage {
+  .message {
+    .data:first-child {
+      position: relative;
+      &::after {
+        content: '';
+        width: 2px;
+        height: 46px;
+        position: absolute;
+        right: 0;
+        bottom: 26px;
+        background-color: #ffffff2f;
+        // opacity: 0.2;
+      }
+    }
+  }
+}
+.commonshare {
+  position: fixed;
+  // right: 0;
+  top: 150px;
+  right: 143px;
+  // bottom: 400px;
+  z-index: 99;
+  width: 74px;
+  .enterLogin{
+    position: relative;
+    left: -45px;
+    cursor: pointer;
+    top: -20px;
+  }
+  .weishare {
+    width: 100%;
+    cursor: pointer;
+    background-color: #DA3827;
+    height: 74px;
+    img {
+      position: relative;
+      margin-top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 36px;
+    }
+    p {
+      text-align: center;
+      font-size: 14px;
+      color: white;
+    }
+  }
+  .back_top {
+    margin-top: 20px;
+    width: 100%;
+    cursor: pointer;
+    background-color: #DA3827;
+    height: 74px;
+    img {
+      position: relative;
+      margin-top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 36px;
+    }
+    p {
+      text-align: center;
+      font-size: 14px;
+      color: white;
+    }
+  }
+}
+</style>

@@ -1,0 +1,579 @@
+<template>
+  <div class="whole">
+    <!-- pc -->
+    <div class="pc_picshow" v-if="!isMobile">
+      <headbg></headbg>
+      <pcnav :navNum="navNum"></pcnav>
+      <div class="classify_change">
+      </div>
+      <div class="contain" style="padding-top: 50px">
+        <div class="act-container">
+          <div class="special spec_top">
+            <div class="pictop clearfix">
+              <div class="sort">
+                <ul class="clearfix">
+                  <li>排序：</li>
+                  <!-- <li :class="sortNum==2?'sortactive':''" @click="sort(2)">最新</li> -->
+                  <li
+                    :class="sortNum == 1 ? 'sortactive' : ''"
+                    @click="sort(1)"
+                  >
+                    编号
+                  </li>
+                  <li
+                    :class="sortNum == 6 ? 'sortactive' : ''"
+                    @click="sort(6)"
+                  >
+                    热度
+                  </li>
+                </ul>
+              </div>
+              <div class="search clearfix">
+                <input
+                  type="text"
+                  placeholder="请输入关键字"
+                  v-model="ocName"
+                />
+                <button type="button" @click="search">搜索</button>
+              </div>
+            </div>
+            <div class="new_piclist">
+              <ul class="clearfix">
+                <li
+                  v-for="(item, index) in list"
+                  :key="index"
+                  @click="toDetail(item, index + 1)"
+                  style="position: relative"
+                >
+                  <div class="cover">
+                    <img :src="item.ocCover" alt />
+                  </div>
+                  <div class="title">
+                    <h3 style="height: 48px">{{ item.ocName }}</h3>
+                    <div class="stat">
+                      <span>编号: #{{ item.ocNumber }}</span>
+                      <span>浏览量: {{ item.ocReade }}</span>
+                    </div>
+                    <span>作者: {{ item.ocWrite }}</span>
+                    <span>组织单位: {{ item.company }}</span>
+                    <p>{{ item.ocVote }}</p>
+                    <!-- v-if="item.opStatus === 1 && item.flag === 0" -->
+                    <!-- <button @click.stop="toToastDetail(item, index + 1)">
+                      投票
+                    </button>
+                    <button
+                      v-if="item.opStatus === 0"
+                      style="background: rgba(218, 56, 39, 0.5)"
+                    >
+                      未开始
+                    </button>
+                    <button
+                      v-if="item.opStatus === 2"
+                      style="background: rgba(218, 56, 39, 0.5)"
+                    >
+                      已结束
+                    </button> -->
+                  </div>
+                  <div class="list_fix1">排名：{{ item.rank }}</div>
+                </li>
+                 <li>
+                  <div class="cover">
+                    <img src="@/assets/img/demo.jpg" alt />
+                  </div>
+                  <div class="title">
+                    <h3 style="height: 48px">测试</h3>
+                    <div class="stat">
+                      <span>编号: #1</span>
+                      <span>浏览量: 1</span>
+                    </div>
+                    <span>作者: 作者</span>
+                    <span>组织单位: 组织单位</span>
+                    <p>0001</p>
+                    <!-- v-if="item.opStatus === 1 && item.flag === 0" -->
+                    <button >
+                      投票
+                    </button>
+                    <!-- <button
+                      v-if="item.opStatus === 0"
+                      style="background: rgba(218, 56, 39, 0.5)"
+                    >
+                      未开始
+                    </button>
+                    <button
+                      v-if="item.opStatus === 2"
+                      style="background: rgba(218, 56, 39, 0.5)"
+                    >
+                      已结束
+                    </button> -->
+                  </div>
+                  <div class="list_fix1">排名：002</div>
+                </li>
+              </ul>
+            </div>
+            <!-- 分页 -->
+            <div class="pages" style="padding-top: 51px">
+              <pagination
+                v-show="total > 0"
+                :total="total"
+                :page.sync="pageNum"
+                :limit.sync="pageSize"
+                @pagination="changePage"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+         <!-- 弹出层 作品的详情页 -->
+      <div class="workdetail" v-if="flg">
+        <div class="contain">
+          <div class="title">
+            <h3>{{showDetail.ocName}}</h3>
+            <img src="@/assets/img/zjact/close.png" alt @click="close()" />
+          </div>
+          <div class="edit">
+            <span>作者：{{showDetail.ocWrite}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>编号：#{{showDetail.ocNumber}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>浏览量：#{{showDetail.ocReade}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <!-- <span>组织单位：{{showDetail.company}}</span> -->
+          </div>
+          <div class="content">
+            <div class="lyric" v-html="showDetail.ocComposingWords"></div>
+          </div>
+          <!-- <p class="vote1">{{showDetail.ocVote}}</p>
+          <button
+@click.stop="toToastDetail(item, index + 1)"
+          >投票</button> -->
+          <div class="wechat">
+            <div @click="showQrcode()" @mouseout.stop="hideQrcode">
+              <img src="@/assets/img/zjact/wechat.png" />
+              <p>分享</p>
+            </div>
+            <div class="code" v-if="qrcodeFlag">
+              <div id="codema" class="qrcode" ref="qrcode"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- wx -->
+    <div class="wx-picshow" v-if="isMobile">
+      <wxheadbg></wxheadbg>
+      <wxnav :navNum="navNum"></wxnav>
+      <!-- <div class="classify_change ">
+          <ul class="clearfix">
+            <li :class="operateCode == 'classifyActive'">视频类</li>
+          </ul>
+        </div> -->
+      <div class="listshow">
+        <div class="listtop">
+          <div class="search">
+            <input
+              type="text"
+              placeholder="请输入关键字"
+              v-model="ocName"
+              @change="search()"
+            />
+            <!-- <button @click="search">搜索</button> -->
+          </div>
+          <div class="sort">
+            <ul class="clearfix">
+              <li>排序：</li>
+              <!-- <li :class="sortNum==2?'sortactive':''" @click="sort(2)">最新</li> -->
+              <li :class="sortNum == 1 ? 'sortactive' : ''" @click="sort(1)">
+                编号
+              </li>
+              <li :class="sortNum == 6 ? 'sortactive' : ''" @click="sort(6)">
+                热度
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <van-list
+          v-model="loading"
+          :finished="finished"
+          finished-text="没有更多了"
+          @load="getSongList()"
+        >
+          <div class="list1pic">
+            <ul class="clearfix">
+              <li
+                class="coverlist"
+                v-for="(item, index) in list"
+                :key="index"
+                @click="toDetail(item, index + 1)"
+              >
+                <div class="cover">
+                  <img :src="item.ocCover" alt />
+                </div>
+                <div class="title">
+                  <h3>{{ item.ocName | substr(10) }}</h3>
+                  <div class="" style="display:flex;justify-content: space-between;">
+                    <span>编号：#{{ item.ocNumber }}</span>
+                    <span>浏览量：{{ item.ocReade }}</span>
+                  </div>
+                  <span>姓名：{{ item.ocWrite }}</span>
+                  <span>组织单位：{{ item.company }}</span>
+                </div>
+                <!-- 排名 -->
+                <div class="list_fix">排名：{{ item.rank }}</div>
+              </li>
+            </ul>
+          </div>
+        </van-list>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import QRCode from 'qrcodejs2'
+import Pagination from '@/components/Pagination'
+import headbg from './components/pcheader'
+import pcnav from './components/pcnav'
+import wxheadbg from './components/wxheadbg'
+import wxnav from './components/wxnav'
+import wxService from '@/api/wxService'
+// import Bus from '@/http/bus'
+// const $ = require('jquery')
+var imgURrl = require('@/assets/img/shareicon.png')
+export default {
+  name: 'Picshow',
+  components: {
+    headbg,
+    pcnav,
+    wxheadbg,
+    wxnav,
+    Pagination
+  },
+  computed: {
+    ...mapGetters(['isMobile', 'userInfo', 'publishStatus'])
+  },
+  data() {
+    return {
+      navNum: 2,
+      sortNum: 1,
+      classify: 1,
+      operateCode: 'ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0',
+      loading: false,
+      ocName: '',
+      currentPge: 1,
+      pageSize: 12,
+      pageNum: 1,
+      total: 0,
+      list: [],
+      flag: false,
+      showDetail: {},
+      finished: false,
+      qrcodeFlag: false,
+      qrcode: null,
+      currentPage: 1,
+      judge: null,
+      flg: false
+    }
+  },
+  methods: {
+    userVote(item, num) {
+      if (!this.userInfo) {
+        if (num === 1) {
+          this.$confirm('投票需要登录，立即去登录', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            /*
+            参数说明：
+            userType：PCWOPERATE / WXOPERATE
+            preUrl： 当前页面地址,,注册页面地址
+            optype：TOUGAO / TOUPIAO
+          */
+            window.location.href =
+              window.location.origin +
+              '/users/getAuthorizeCode.login?preurl=' +
+              window.location.href +
+              ',,' +
+              window.location.origin +
+              '/21sjgs' +
+              '&userType=PCWOPERATE'
+            // this.$router.push({
+            //   path: '/articlecontribute'
+            // })
+          })
+        } else {
+          this.$dialog
+            .confirm({
+              title: '提示信息',
+              message: '您还未登录，请先登录',
+              confirmButtonText: '登录'
+            })
+            .then(() => {
+              window.location.href =
+                window.location.origin +
+                '/users/getAuthorizeCode.login?preurl=' +
+                window.location.href +
+                ',,' +
+                window.location.origin +
+                '/21sjgs' +
+                '&userType=WXOPERATE'
+            })
+            .catch(() => {
+              // on cancel
+            })
+        }
+      } else {
+        // console.log(this.userInfo)
+        //  console.log(item)
+        this.vote(item, num)
+      }
+    },
+    vote(item, num) {
+      const params = {}
+      const _this = this
+      // 防止重复提交
+      if (!this.flag) {
+        this.flag = true
+        params.ocCode = item.ocCode
+        params.vote = 1
+        params.operateCode = item.operateCode
+        this.$apis.userVote(params).then((res) => {
+          if (res.data.status.returnCode === 100) {
+            item.ocVote++
+            if (res.data.data.list[0] === true) {
+              // 投票已满
+              for (var i = 0; i < this.list.length; i++) {
+                this.list[i].flag = 1
+              }
+              // item.flag = 1
+              if (num === 1) {
+                _this.$message.warning('投票已满,明天再来吧')
+              } else {
+                _this.$toast('投票已满,明天再来吧')
+              }
+              return false
+            }
+            _this.flag = false
+            if (num === 1) {
+              _this.$message.success('投票成功')
+            } else {
+              _this.$toast('投票成功')
+            }
+          }
+        })
+      }
+    },
+    toWenDetail(item) {
+      // debugger
+      const _this = this
+      const params = {}
+      params.ocCode = item.ocCode
+      _this.$apis.getReaderCount(params).then(res => {
+        if (res.data.status.returnCode === 100) {
+          item.ocReade++
+        }
+        console.log('res', res)
+      })
+      if (!this.isMobile) {
+        this.showDetail = item
+        this.flg = true
+      } else {
+        this.$router.push({
+          name: 'act_detail',
+          params: {
+            id: item.id
+          }
+        })
+      }
+    },
+    sort(sortNum) {
+      this.sortNum = sortNum
+      this.search()
+    },
+    classifyChange(classifyNum) {
+      this.operateCode = classifyNum
+      this.list = []
+      this.search()
+    },
+    search() {
+      this.list = []
+      this.pageNum = 1
+      this.currentPage = 1
+      this.finished = false
+      this.getSongList()
+    },
+    getSongList() {
+      const _this = this
+      const params = {}
+      params.pageNum = this.currentPage
+      params.pageSize = this.pageSize
+      if (this.ocName !== null || this.ocName !== '') {
+        params.ocName = this.ocName
+      }
+      params.searchSort = this.sortNum
+      params.status = 1
+      params.operateCode = this.operateCode
+
+      if (this.isMobile) {
+        this.loading = true
+      }
+      this.$apis.getList(params).then((res) => {
+        console.log(res)
+        if (this.isMobile) {
+          // 加载状态结束
+          _this.loading = false
+          _this.currentPage++
+          if (_this.list.length === 0) {
+            _this.list = res.data.data.list
+          } else {
+            _this.list = _this.list.concat(res.data.data.list)
+          }
+          // 数据全部加载完成
+          if (res.data.data.page.curPage === res.data.data.page.totalPage) {
+            _this.finished = true
+          }
+
+          for (var i = 0; i < _this.list.length; i++) {
+            _this.judge = _this.list[i].thirdPartyId
+            if (_this.list[i].ocCover) {
+              if (_this.judge) {
+                _this.list[i].ocCover = _this.list[i].ocCover.split(',')[0]
+                console.log('11111', _this.list[i].ocCover)
+              } else {
+                _this.list[i].ocCover = _this.list[i].ocCover.split(',')[0]
+                // _this.list[i].ocCover = _this.list[i].ocCover.split(',')[0] + '?x-oss-process=image/resize,w_800/quality,q_50'
+              }
+            }
+          }
+        } else {
+          console.log(res)
+          _this.list = res.data.data.list
+          // console.log(_this.list[1].ocCover.split(','))
+          for (var j = 0; j < _this.list.length; j++) {
+            _this.judge = _this.list[j].thirdPartyId
+            if (_this.list[j].ocCover) {
+              if (_this.judge) {
+                _this.list[j].ocCover = _this.list[j].ocCover.split(',')[0]
+              } else {
+                _this.list[j].ocCover =
+                  _this.list[j].ocCover.split(',')[0] +
+                  '?x-oss-process=image/resize,w_800/quality,q_50'
+              }
+            }
+          }
+          _this.total = res.data.data.page.totalRow
+          console.log(_this.total)
+        }
+      })
+    },
+    // reader阅读量
+    // getReadCount() {
+
+    // },
+    toDetail(item, index) {
+      var pageNum = (this.pageNum - 1) * this.pageSize + index
+      this.$router.push({
+        name: 'pic_detail',
+        params: {
+          index: pageNum,
+          ocName: this.ocName === '' ? 'null' : this.ocName,
+          searchSort: this.sortNum,
+          operateCode: item.operateCode
+        }
+      })
+    },
+    toToastDetail(item, index) {
+      var pageNum = (this.pageNum - 1) * this.pageSize + index
+      this.$refs.toToast.style.display = 'block'
+      var url = window.location.origin + '/21tssd/pic_detail' + '/' + pageNum + '/' + (this.ocName === '' ? 'null' : this.ocName) + '/' + this.sortNum + '/' + item.operateCode
+      this.$refs.qrcode.innerHTML = ''
+      //  setTimeout(()=>{
+      // this.creatQrcode(url)
+      //  },100)
+      this.qrcode = new QRCode(this.$refs.qrcode, {
+        width: 240,
+        height: 240,
+        text: url, // 二维码地址
+        colorDark: '#000',
+        colorLight: '#fff'
+      })
+    },
+    closeToast() {
+      this.$refs.toToast.style.display = 'none'
+    },
+    close() {
+      this.flg = false
+    },
+    changePage(val) {
+      console.log(val)
+      this.currentPage = val.page
+      this.list = []
+      this.getSongList()
+    },
+    creatQrcode(text) {
+      // this.$refs.qrcode.innerHTML = ''
+      var qr = document.getElementById('codema')
+      this.qrcode = null
+      qr.innerHTML = ''
+      this.qrcode = new QRCode(qr, {
+        width: 80,
+        height: 80,
+        text: text, // 二维码地址
+        colorDark: '#000',
+        colorLight: '#fff'
+      })
+    },
+    showQrcode() {
+      const _this = this
+      var url =
+        window.location.origin + '/21tssd/act_detail/' + this.showDetail.id
+      this.qrcodeFlag = true
+      this.$nextTick(() => {
+        _this.creatQrcode(url)
+        console.log(url, this.qrcode)
+      })
+    },
+    hideQrcode() {
+      this.qrcodeFlag = false
+      this.qrcode = null
+    },
+    getWxShare() {
+      var shareConfig = {}
+      shareConfig.currentTitle = '“童声诵党”庆党100周年昆山市少儿朗诵大赛'
+      shareConfig.share_url = window.location.href
+      shareConfig.currentCover =
+      window.location.origin + '/21tssd/' + imgURrl
+      shareConfig.currentDetail = '作品展示'
+      // console.log('分享参数：', shareConfig)
+      wxService.setWXConfig(shareConfig)
+    }
+  },
+
+  activated() {
+    const _this = this
+    if (this.isMobile) {
+      this.getWxShare()
+    }
+    _this.bus.$off('targetData')
+    // 根据key名获取传递回来的参数，data就是map
+    _this.bus.$on('targetData', function(data, num) {
+      // 赋值给当前页面的值
+      // this.list[data].ocVote
+      if (!_this.isMobile) {
+        _this.list[(data - 1) % 12].ocVote =
+          _this.list[(data - 1) % 12].ocVote + num
+      } else {
+        _this.list[data - 1].ocVote = _this.list[data - 1].ocVote + num
+      }
+      console.log('aaaa11', _this.list[data - 1])
+      console.log('aaaa', _this.list[data - 1].ocVote)
+    })
+  },
+  mounted() {
+    if (this.isMobile) {
+      this.getWxShare()
+    } else {
+      this.getSongList()
+    }
+  }
+}
+</script>

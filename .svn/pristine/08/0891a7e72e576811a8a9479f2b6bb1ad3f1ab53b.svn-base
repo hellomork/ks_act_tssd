@@ -1,0 +1,421 @@
+<template>
+  <div class="whole">
+    <div class="articlecontribute" v-if="!isMobile">
+      <div class="headerbg"></div>
+      <div class="below">
+        <div class="act-container">
+          <div class="list">
+            <h3>信息填写</h3>
+            <div class="linerow" style="background:white;text-align:center;padding-bottom:30px;color:red"> （服务热线：13081942869） </div>
+            <el-form ref="form" :model="form" label-width="80px">
+              <div class="rowline clearfix">
+                <div class="line">
+                  <el-form-item label="姓名" class="is-required">
+                    <el-input v-model.trim="form.ocWrite"   placeholder="请填写"></el-input>
+                  </el-form-item>
+                </div>
+                <div class="line">
+                  <el-form-item label="年龄" class="is-required">
+                    <el-input v-model.trim="form.age" type="number"   placeholder="请填写"></el-input>
+                  </el-form-item>
+                </div>
+              </div>
+              <div class="rowline clearfix">
+                <div class="line">
+                  <el-form-item label="联系方式" class="is-required">
+                    <el-input v-model.trim="form.mobile" placeholder="请填写" maxlength="11"></el-input>
+                  </el-form-item>
+                </div>
+                <div class="line">
+                  <el-form-item label="地址" class="is-required">
+                    <el-input v-model.trim="form.address" placeholder="请正确填写"></el-input>
+                  </el-form-item>
+                </div>
+              </div>
+              <div class="segmentation">
+                ———————————————————— 以上信息将用于获奖之后邮寄奖品
+                ————————————————————
+              </div>
+              <div class="rowline">
+                <div class="line1">
+                  <el-form-item label="类别" class="is-required">
+                    <el-select
+                      v-model.trim="form.operateCode"
+                      placeholder="请选择"
+                    >
+                      <el-option label="视频类" :value="'ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0'"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </div>
+              <div class="rowline clearfix">
+                <div class="line1">
+                  <el-form-item label="组织单位" class="is-required">
+                    <el-input v-model="form.company"  placeholder="填写您所在州（市）或县（区）图书馆"></el-input>
+                  </el-form-item>
+                </div>
+              </div>
+              <div class="rowline clearfix">
+                <div class="line1">
+                  <el-form-item label="作品名称" class="is-required">
+                    <el-input v-model="form.ocName"  placeholder="请填写"></el-input>
+                  </el-form-item>
+                </div>
+              </div>
+               <div>
+                    <div v-for="(item, index) in kaOperateContentList" :key="item.indexId">
+                  <div class="rowline clearfix">
+                 <div class="line clearfix">
+                   <el-form-item label="封面图" class="is-required" style="z-index:9999;">
+                  <div style=" float: left">
+                    <UploadCover
+                        @uploadSuccess="uploadSuccess"
+                        @handleRemove="handleRemove"
+                        :index="item.indexId"
+                        :subscript="index"
+                        :fileType="1"
+                        :ref="'upload_' + item.indexId"
+                      ></UploadCover>
+                  </div>
+                </el-form-item>
+                 </div>
+               </div>
+                <div class="rowline clearfix">
+                 <div class="line clearfix">
+                   <el-form-item label="上传视频" class="is-required" style="z-index:9999;">
+                  <div style=" float: left">
+                       <UploadVideo
+                      @uploadSuccess="uploadVideoSuccess"
+                      :index="item.indexId"
+                      :subscript="index"
+                      :fileType="1"
+                      :ref="'upload_' + item.indexId"
+                    ></UploadVideo>
+                  </div>
+                </el-form-item>
+                 </div>
+               </div>
+               </div>
+               </div>
+            </el-form>
+            <div class="sunmit_btn" @click="commit()">提交作品</div>
+          </div>
+        </div>
+      </div>
+    </div>
+        <div class="upload11" v-if="isMobile">
+      <ul>
+         <h3 style="text-align:center;margin-bottom:0.2rem;color:red">投稿填写</h3>
+        <div class="linerow" style="background:white"> （服务热线：13081942869） </div>
+        <div class="name">
+          <van-field
+            v-model.trim="form.ocWrite"
+            required
+            label="姓名"
+            placeholder="请填写姓名"
+            input-align="right"
+            maxlength="10"
+          />
+        </div>
+         <div class="name">
+          <van-field
+            v-model.trim="form.age"
+            required
+            label="年龄"
+            type="number"
+            placeholder="请填写年龄"
+            input-align="right"
+            maxlength="3"
+          />
+        </div>
+        <div class="name">
+          <van-field
+            v-model.trim="form.mobile"
+            required
+            label="联系方式"
+            placeholder="请填写手机号"
+            input-align="right"
+            maxlength="11"
+          />
+        </div>
+        <div class="name" >
+          <van-field
+            v-model.trim="form.address"
+            label="地址"
+            required
+            placeholder="请填写地址"
+            input-align="right"
+            maxlength="18"
+          />
+        </div>
+        <div class="linerow"> ——  以上信息将用于获奖之后邮寄奖品  —— </div>
+        <div class="name">
+          <van-field
+            readonly
+            clickable
+            required
+            name="picker"
+            :value="type"
+            input-align="right"
+            label="类别"
+            placeholder="点击选择类型"
+            @click="showPicker = true"
+          />
+          <van-popup v-model="showPicker" position="bottom">
+            <van-picker
+              show-toolbar
+              :columns="columns"
+              @confirm="onConfirm"
+              @cancel="showPicker = false"
+            />
+          </van-popup>
+        </div>
+           <div class="name">
+          <van-field
+            v-model.trim="form.company"
+            required
+            label="组织单位"
+            placeholder="填写您所在州（市）或县（区）图书馆"
+            input-align="right"
+          />
+        </div>
+         <div class="name">
+          <van-field
+            v-model.trim="form.ocName"
+            required
+            label="作品名称"
+            placeholder="请填写"
+            input-align="right"
+          />
+        </div>
+        <!-- 开始上传 -->
+        <!-- 视频的上传 -->
+        <div class="bb">
+            <li v-for="(item, index) in kaOperateContentList" :key="item.indexId">
+          <div class="fengmian" >封面图上传</div>
+          <UploadCover
+            :fileType="2"
+            @uploadSuccess="uploadSuccess"
+            @delete="deleteWx"
+            :subscript="index"
+            :ref="'upload_' + item.indexId"
+            :name="index"
+          ></UploadCover>
+          <div class="fengmian" style="margin-top:0.4rem">视频上传</div>
+          <UploadVideo
+            :fileType="2"
+            @uploadSuccess="uploadVideoSuccess"
+            @delete="deleteVideoWx"
+            :subscript="index"
+            :ref="'upload_' + item.indexId"
+            :name="index"
+          ></UploadVideo>
+        <!-- <div
+            class="add"
+            @click="del(index)"
+            v-if="kaOperateContentList.length > 1"
+          >
+            删除
+          </div> -->
+        </li>
+        <!-- <div class="add" @click="add">继续添加</div> -->
+
+        </div>
+      </ul>
+       <div class="fix" @click="commit">提交作品</div>
+    </div>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import { checkMobile } from '@/utils/index'
+import NEditor from '@/components/Neditor/index'
+import UploadCover from '@/components/Upload/cover'
+import UploadVideo from '@/components/Upload/video'
+export default {
+  components: {
+    NEditor,
+    UploadCover,
+    UploadVideo
+  },
+  computed: {
+    ...mapGetters(['userInfo', 'isMobile', 'timeDiff']),
+    editor() {
+      return this.$refs.myQuillEditor.quill
+    }
+  },
+  data() {
+    return {
+      form: {
+        operateCode: 'ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0'
+      },
+      showPicker: false,
+      columns: ['视频类'],
+      editorOption: {
+        placeholder: '请输入作品内容 ',
+        theme: 'snow', // 主题风格
+        modules: {
+          toolbar: [
+            ['bold', 'italic'],
+            [{ size: ['small', false, 'large', 'huge'] }],
+            // [{ color: ['#666666'] }],
+            // [{ font: ['16px'] }],
+            [{ list: 'ordered' }]
+          ]
+        }
+      },
+      kaOperateContentList: [
+        {
+          ocCover: '',
+          ocName: '',
+          ocComposingWords: '',
+          ocUri: '',
+          indexId: new Date().getTime(),
+          operateCode: '',
+          urlList: [],
+          imgArr: []
+        }
+      ],
+      type: ''
+    }
+  },
+  methods: {
+    onConfirm(value) {
+      this.type = value
+      this.form.operateCode = 'ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0'
+      this.showPicker = false
+    },
+    deleteWx(detail, subscript) {
+      this.kaOperateContentList[subscript].urlList.splice(detail.index, 1)
+    },
+    deleteVideoWx(detail, subscript) {
+      this.kaOperateContentList[subscript].ocUri = ''
+    },
+    uploadSuccess(url, uid, index) {
+      console.log('index', index)
+      var fileData = { uid: uid, url: url }
+      this.kaOperateContentList[index].imgArr.push(fileData)
+      // 上传成功给封面赋值
+      this.kaOperateContentList[index].urlList.push(url)
+      console.log('this.urlList', this.kaOperateContentList[index].urlList)
+      // if (this.isMobile) {
+      //   this.kaOperateContentList[this.urlList.length - 1].ocCover = this.urlList[this.urlList.length - 1]
+      // }
+      this.$forceUpdate()
+    },
+    // pc 组图删除
+    handleRemove(uid, subscript) {
+      this.kaOperateContentList[subscript].imgArr.forEach((item, index) => {
+        if (uid === item.uid) {
+          this.kaOperateContentList[subscript].imgArr.splice(index, 1)
+        }
+      })
+      this.kaOperateContentList[subscript].urlList = []
+      for (
+        var i = 0;
+        i < this.kaOperateContentList[subscript].imgArr.length;
+        i++
+      ) {
+        this.kaOperateContentList[subscript].urlList.push(
+          this.kaOperateContentList[subscript].imgArr[i].url
+        )
+      }
+      console.log('this.urlList2', this.kaOperateContentList[subscript].urlList)
+    },
+    // 上传视频
+    uploadVideoSuccess(url, uid, index) {
+      // 上传成功给封面赋值
+      this.kaOperateContentList[index].ocUri = url
+      console.log('this.urlList', this.kaOperateContentList[index].ocUri)
+      // if (this.isMobile) {
+      //   this.kaOperateContentList[this.urlList.length - 1].ocCover = this.urlList[this.urlList.length - 1]
+      // }
+      this.$forceUpdate()
+    },
+    commit() {
+      const _this = this
+      // 上传前验证信息- 触发上传
+      // var flag = false // 判断是否图片已上传完成
+      for (let i = 0; i < this.kaOperateContentList.length; i++) {
+        this.kaOperateContentList[i].ocWrite = this.form.ocWrite
+        this.kaOperateContentList[i].mobile = this.form.mobile
+        this.kaOperateContentList[i].age = this.form.age
+        this.kaOperateContentList[i].address = this.form.address
+        this.kaOperateContentList[i].company = this.form.company
+        this.kaOperateContentList[i].ocName = this.form.ocName
+        this.kaOperateContentList[i].operateCode = this.form.operateCode
+        const item = this.kaOperateContentList[i]
+        if (item.ocWrite === '' || item.ocWrite === undefined) {
+          this.$message.error('请填写姓名')
+          return
+        } else if (item.age === '' || item.age === undefined) {
+          this.$message.error('请填写年龄')
+          return
+        } else if (
+          item.mobile === '' ||
+          item.mobile === undefined ||
+          !checkMobile(item.mobile)
+        ) {
+          this.$message.error('手机号码不正确')
+          return
+        } else if (item.address === '' || item.address === undefined) {
+          this.$message.error('地址不能为空')
+          return
+        } else if (item.company === '' || item.company === undefined) {
+          this.$message.error('组织单位不能为空')
+          return
+        } else if (item.ocName === '' || item.ocName === undefined) {
+          this.$message.error('请填写作品名称')
+          return
+        }
+        if (item.ocUri === '' || item.ocUri === undefined) {
+          this.$message.error('请上传作品视频')
+          return
+        }
+        item.ocCover = item.urlList.toString()
+        if (item.ocCover === '') {
+          this.$message.error('请选择作品图片')
+          return
+        }
+      }
+      // 清除所有session缓存
+      this.$apis.uploadWorks(this.kaOperateContentList).then((res) => {
+        window.sessionStorage.clear()
+        if (res.data.status.returnCode === 100) {
+          _this.$message.success('上传成功！')
+          setTimeout(() => {
+            _this.$router.push({
+              path: '/picshow'
+            })
+          }, 500)
+        } else {
+          _this.$message.error('上传失败！')
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        }
+      })
+      // }
+    }
+  },
+  mounted() {
+    var nowTime = this.timeDiff
+    var endTime = new Date('2021/06/15 23:59:59').getTime()
+    console.log('nowTime', nowTime)
+    console.log('endTime', endTime)
+    if (nowTime > endTime) {
+      if (this.isMobile) {
+        this.$toast('投稿已结束')
+        this.$router.push({
+          path: '/'
+        })
+      } else {
+        this.$message.info('投稿已结束')
+        this.$router.push({
+          path: '/'
+        })
+      }
+    }
+  }
+}
+</script>

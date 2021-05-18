@@ -1,0 +1,571 @@
+<template>
+  <div style="background-color:#fff;">
+    <el-container style="height: 100%;min-height:900px;">
+      <el-aside width="200px" style="background-color: #545c64">
+        <el-menu
+          default-active="2"
+          class="el-menu-vertical-demo"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#fff"
+        >
+          <el-menu-item index="1" :class="{'active':tabflag==1}" @click="changeTab(1)">
+            <i class="el-icon-menu"></i>
+            <span slot="title">作品管理</span>
+          </el-menu-item>
+          <!-- <el-menu-item index="2" :class="{'active':tabflag==2}" @click="changeTab(2)">
+            <i class="el-icon-menu"></i>
+            <span slot="title">入围作品</span>
+          </el-menu-item>-->
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <el-main>
+          <div class="main">
+            <div class="top-chooce">
+              <div class="choose-bar clearfix">
+                <ul>
+                  <li>
+                    <span>投稿类型</span>
+                    <el-select
+                      v-model="operateCode"
+                      placeholder="请选择投稿类型"
+                      @change="getList()"
+                    >
+                      <el-option value="ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0" label="视频类"></el-option>
+                    </el-select>
+                  </li>
+                  <!-- <li v-if="isTenant">
+                    <span>状态:</span>
+                    <el-select
+                      v-model="listQuery.firstExpertVote"
+                      placeholder="请选择状态"
+                      @change="changeStatus()"
+                      >
+                      <el-option value="" label="全部"></el-option>
+                      <el-option value="2" label="入围"></el-option>
+                      <el-option value="1" label="未入围"></el-option>
+                      <el-option value="3" label="精选"></el-option>
+                    </el-select>
+                  </li> -->
+                   <li v-if="isTenant">
+                    <span>排序:</span>
+                    <el-select
+                      v-model="listQuery.searchSort"
+                      placeholder="请选择状态"
+                      @change="changeStatus()"
+                      >
+                      <el-option value="2" label="最新"></el-option>
+                      <el-option value="4" label="票数"></el-option>
+                      <el-option value="5" label="标题"></el-option>
+                    </el-select>
+                  </li>
+                  <!-- <li>
+                    <li v-if="!isTenant">
+                    <span>状态:</span>
+                    <el-select
+                      v-model="listQuery.flag"
+                      placeholder="请选择状态"
+                      @change="changeStatus()"
+                      >
+                      <el-option value="" label="全部"></el-option>
+                      <el-option value="0" label="待定"></el-option>
+                      <el-option value="1" label="入围"></el-option>
+                    </el-select>
+                  </li> -->
+                  <li>
+                    <el-input v-model="listQuery.title" placeholder="输入标题关键字">
+                      <el-button
+                        slot="append"
+                        @click="getList()"
+                        style="background-color: #409EFF;color:#ffff;font-size: 14px;"
+                        icon="el-icon-search"
+                      ></el-button>
+                    </el-input>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <el-table ref="Tablelist" :data="datalist" border stripe >
+              <el-table-column align="center" label="序号" min-width="150px">
+                <template slot-scope="scope">{{ scope.row.ocNumber}}</template>
+              </el-table-column>
+              <el-table-column align="center" label="标题" min-width="350px">
+                <template slot-scope="scope">{{ scope.row.ocName}}</template>
+              </el-table-column>
+              <el-table-column align="center" label="姓名" min-width="150px">
+                <template slot-scope="scope">{{ scope.row.ocWrite}}</template>
+              </el-table-column>
+              <el-table-column align="center" label="联系方式" min-width="150px">
+                <template slot-scope="scope">{{ scope.row.mobile}}</template>
+              </el-table-column>
+              <!-- <el-table-column align="center" label="专家点赞" min-width="150px" v-if="isTenant">
+                <template slot-scope="scope">{{ scope.row.firstExpertVote}}</template>
+              </el-table-column> -->
+              <!-- <el-table-column align="center" label="审核状态" min-width="150px">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.tenantFlag === 0">待定</span>
+                  <span v-if="scope.row.tenantFlag === 1">已入围</span>
+                  <span v-if="isTenant && scope.row.firstExpertVote !== 0 && scope.row.status !== 3">已入围</span>
+                  <span v-if="isTenant && scope.row.firstExpertVote !== 0 && scope.row.status === 3">精选</span>
+                </template>
+              </el-table-column> -->
+              <el-table-column align="center" label="操作" min-width="500px" fixed="right">
+                <template slot-scope="scope">
+                  <el-button type="primary" size="small" @click="handlecheck(scope.row, scope.$index)">预览</el-button>
+                  <!-- <template>
+                    <el-button type="primary" size="small" @click="handlechoose(scope.row, 3)" v-if="isTenant&&scope.row.firstExpertVote!==0&&scope.row.status!==3">设为精选</el-button>
+                    <el-button type="danger" size="small" @click="handlechoose(scope.row, 1)" v-if="isTenant&&scope.row.status===3">取消精选</el-button>
+                  </template>
+                  <el-button
+                    type="success"
+                    size="small"
+                    @click="handleStatus(scope.row,0)"
+                    v-if="!isTenant&&(scope.row.tenantFlag==null||scope.row.tenantFlag!==0&&scope.row.tenantFlag!==1)"
+                  >待定</el-button>
+                  <el-button
+                    type="success"
+                    size="small"
+                    @click="deleteBoutique(scope.row,0)"
+                    v-if="!isTenant&&(scope.row.tenantFlag!=null&&scope.row.tenantFlag===0&&scope.row.tenantFlag!==1)"
+                  >取消待定</el-button>
+                  <el-button
+                    type="danger"
+                    size="small"
+                    @click="handleStatus(scope.row,1)"
+                    v-if="!isTenant&&(scope.row.tenantFlag==null||scope.row.tenantFlag!==1)"
+                  >入围</el-button>
+                  <el-button
+                    type="danger"
+                    size="small"
+                    @click="deleteBoutique(scope.row,1)"
+                    v-if="!isTenant&&(scope.row.tenantFlag!=null&&scope.row.tenantFlag===1)"
+                  >取消入围</el-button> -->
+                  <!-- <template>
+                    <el-button type="danger" size="small" @click="handledel(scope.row)">删除</el-button>
+                  </template> -->
+                   <el-button type="primary" size="small" @click="toDetailPath('pics_edit',scope.row.id)" v-if="isTenant">编辑</el-button>
+                  <el-button type="danger" size="small" @click="handledelete(scope.row.id)" v-if="isTenant">删除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <pagination
+              v-show="listQuery.total > 0"
+              :total="listQuery.total"
+              :page.sync="listQuery.pageNum"
+              :limit.sync="listQuery.pageSize"
+              @pagination="getList"
+            />
+            <!-- 查看弹框 -->
+            <el-dialog
+              :visible.sync="checkVisible"
+              :title="checkList.ocName"
+              :center="true"
+              width="70%"
+              :before-close="closecheck"
+            >
+            <div class="extra"><span class="wirte">序号：{{detail.ocNumber}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="wirte">作品名称：{{detail.ocName}}</span></div>
+              <!-- <el-carousel indicator-position="outside" :autoplay="false" :initial-index="0">
+                <el-carousel-item v-for="(item,index) in checkList" :key="index">
+                  <div class="preview" :style="{backgroundImage: 'url('+ item +')'}"> </div>
+                </el-carousel-item>
+              </el-carousel> -->
+              <div class="norder" >
+                 <div style=" cursor: pointer;" @click="open(checkList[currentImg])" class="preview" :style="{backgroundImage: 'url('+ checkList[currentImg] +')'}"> </div>
+              </div>
+              <!-- 预览 -->
+                  <!-- <van-image-preview v-model="show" :images="images" :showIndex="false"  :closeable="true" >
+                      <template v-slot:index></template>
+                  </van-image-preview> -->
+               <div class="indicator_diot">
+                  <ul>
+                    <li :class="currentImg==index?'imgactive':''" @click="handleImgClick(index)" v-for="(item1, index) in checkList" :key="index">{{index + 1}}</li>
+                  </ul>
+                 </div>
+              <div class="switchover">
+                <button @click="prev">上一组图</button><button @click="next">下一组图</button>
+              </div>
+              <!-- <template>
+                老师按钮
+                <el-button type="success" size="small" v-if="!isTenant&&(detail.tenantFlag==null||detail.tenantFlag!==1)" @click="handleStatus(detail,1)">入围</el-button>
+                <el-button type="success" size="small" v-if="!isTenant&&(detail.tenantFlag!=null&&detail.tenantFlag===1)" @click="deleteBoutique(detail,1)">取消入围</el-button>
+                <el-button type="primary" size="small" v-if="!isTenant&&(detail.tenantFlag==null||detail.tenantFlag!==0&&detail.tenantFlag!==1)" @click="handleStatus(detail,0)">待定</el-button>
+                <el-button type="primary" size="small" v-if="!isTenant&&(detail.tenantFlag!=null&&detail.tenantFlag===0&&detail.tenantFlag!==1)" @click="deleteBoutique(detail,0)">取消待定</el-button>
+                管理员按钮
+                <el-button type="primary" size="small" @click="handlechoose(detail, 3)" v-if="isTenant&&detail.firstExpertVote!==0&&detail.status!==3">设为精选</el-button>
+                <el-button type="danger" size="small" @click="handlechoose(detail, 1)" v-if="isTenant&&detail.status===3">取消精选</el-button>
+              </template> -->
+            </el-dialog>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+<script>
+import { mapGetters } from 'vuex'
+import Upload from '@/components/Upload/index'
+import Pagination from '@/components/Pagination'
+export default {
+  computed: {
+    ...mapGetters(['userinfologin'])
+  },
+  components: { Upload, Pagination },
+  data() {
+    return {
+      operateCode: 'ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0',
+      datalist: [
+        {
+          status: 1,
+          tenantFlag: 0
+        }
+      ],
+      listQuery: {
+        pageNum: 1,
+        pageSize: 12,
+        total: 0,
+        status: null,
+        title: '',
+        firstExpertVote: null,
+        searchSort: '2'
+      },
+      //   查看
+      checkVisible: false,
+      checkList: [
+        {
+          ocCover: ''
+        }
+      ],
+      //   上传资源
+      uploadVisible: false,
+      uploadList: {},
+      tabflag: 1,
+      userType: 1,
+      imgList: [],
+      isTenant: false,
+      detail: {
+        status: 1,
+        tenantFlag: null
+      },
+      currentIndex: null,
+      new_detail: {
+        ocNumber: '',
+        ocName: ''
+      },
+      currentImg: 0
+      // images: [],
+      // show: false
+    }
+  },
+  methods: {
+    // open(img) {
+    //   this.images = []
+    //   this.images.push(img)
+    //   // this.images.push(this.resList[index].ocCover)
+    //   this.show = !this.show
+    // },
+    hasLogin(callback) {
+      if (!this.userinfologin) {
+        this.$message.error('您无权进入此页面，请先登录')
+        this.$router.push({
+          path: '/login'
+        })
+        return
+      }
+      if (this.userinfologin.id === 2) {
+        this.isTenant = true
+      }
+      if (callback) {
+        callback()
+      }
+    },
+    handleImgClick(index) {
+      this.currentImg = index
+    },
+    // 下一页
+    next() {
+      this.currentImg = 0
+      const _this = this
+      if (_this.currentIndex === _this.listQuery.total) {
+        _this.$message.info('已到最后一幅作品')
+      } else {
+        _this.currentIndex++
+        const params = {}
+        params.pageSize = 1
+        params.pageNum = _this.currentIndex
+        // params.flag = this.listQuery.flag
+        params.ocName = this.listQuery.title
+        params.firstExpertVote = this.listQuery.firstExpertVote
+        params.searchSort = 2
+        params.status = 3
+        params.operateCode = _this.operateCode
+        _this.$apis.getBackList(params).then(res => {
+          console.log(res.data.data.list[0])
+          _this.checkList = res.data.data.list[0].ocCover.split(',')
+          _this.detail = res.data.data.list[0]
+          // _this.datalist = res.data.data.list
+          // _this.listQuery.total = res.data.data.page.totalRow
+        })
+      }
+    },
+    // 上一页
+    prev() {
+      this.currentImg = 0
+      const _this = this
+      if (_this.currentIndex === 1) {
+        _this.$message.info('已经是第一幅组图')
+      } else {
+        _this.currentIndex--
+        const params = {}
+        params.pageSize = 1
+        params.pageNum = _this.currentIndex
+        // params.flag = this.listQuery.flag
+        params.ocName = this.listQuery.title
+        params.firstExpertVote = this.listQuery.firstExpertVote
+        params.searchSort = 2
+        params.status = 3
+        params.operateCode = _this.operateCode
+        _this.$apis.getBackList(params).then(res => {
+          console.log(res.data.data.list[0])
+          _this.checkList = res.data.data.list[0].ocCover.split(',')
+          _this.detail = res.data.data.list[0]
+          // _this.datalist = res.data.data.list
+          // _this.listQuery.total = res.data.data.page.totalRow
+        })
+      }
+    },
+    changeStatus() {
+      this.listQuery.pageNum = 1
+      this.getList()
+    },
+    getList() {
+      this.currentImg = 0
+      const params = {}
+      const _this = this
+      params.pageSize = this.listQuery.pageSize
+      params.pageNum = this.listQuery.pageNum
+      // params.flag = this.listQuery.flag
+      params.ocName = this.listQuery.title
+      params.firstExpertVote = this.listQuery.firstExpertVote
+      params.searchSort = this.listQuery.searchSort
+      params.status = 3
+      params.operateCode = _this.operateCode
+      _this.$apis.getBackList(params).then(res => {
+        console.log(res)
+        _this.datalist = res.data.data.list
+        _this.listQuery.total = res.data.data.page.totalRow
+      })
+    },
+    changeTab(num) {
+      if (num === 2) {
+        this.$message.warning('第二轮暂未开始')
+        return
+      }
+      this.tabflag = num
+    },
+    toPath(path) {
+      this.$router.push({ path: '/' + path })
+    },
+    // 查看
+    handlecheck(item, index) {
+      console.log('12323', index)
+      this.currentIndex = index + (this.listQuery.pageNum - 1) * this.listQuery.pageSize + 1
+      this.checkList = ''
+      this.checkVisible = true
+      this.checkList = item.ocCover.split(',')
+      console.log('img', this.checkList)
+      console.log('img2', this.checkList.length)
+      this.detail = item
+      // console.log(this.detail)
+    },
+    closecheck() {
+      this.getList()
+      this.checkVisible = false
+    },
+    toDetailPath(path, id) {
+      this.$router.push({
+        name: path,
+        params: {
+          id: id
+        }
+      })
+    },
+    // 删除
+    handledelete(id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = {}
+        const _this = this
+        params.id = id
+        params.status = 2
+        _this.$apis.backDelete(params).then(res => {
+          // this.contentsList.splice(index, 1)
+          if (res.data.status.returnCode === 100) {
+            _this.$message.success('删除成功！')
+            _this.getList()
+          } else {
+            _this.$message.error('删除失败！')
+          }
+        })
+      })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 待定或入围
+    handleStatus(row, status) {
+      const _this = this
+      const params = {}
+      params.ocCode = row.ocCode
+      params.status = status
+      this.$apis.backCheck(params).then(res => {
+        if (res.data.status.returnCode === 100) {
+          _this.$message.success('操作成功')
+          row.tenantFlag = status
+          _this.detail.tenantFlag = status
+        }
+      })
+    },
+    // 取消待定与入围
+    deleteBoutique(row, status) {
+      const _this = this
+      const params = {}
+      params.ocCode = row.ocCode
+      params.status = status
+      this.$apis.deleteBoutique(params).then(res => {
+        if (res.data.status.returnCode === 100) {
+          _this.$message.success('操作成功')
+          row.tenantFlag = null
+          _this.detail.tenantFlag = null
+        }
+      })
+    },
+    // 精选或取消
+    handlechoose(row, status) {
+      const _this = this
+      const params = {}
+      params.id = row.id
+      params.status = status
+      this.$apis.handlechoose(params).then(res => {
+        if (res.data.status.returnCode === 100) {
+          _this.$message.success('操作成功')
+          row.status = status
+          _this.detail.status = status
+        }
+      })
+    }
+  },
+  created() {
+    this.hasLogin(() => {
+      this.getList()
+    })
+  }
+}
+</script>
+<style lang="scss" scoped>
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: ' ';
+    clear: both;
+    height: 0;
+  }
+}
+.active {
+  i {
+    color: #409eff;
+  }
+  span {
+    color: #409eff;
+  }
+}
+.normal {
+  i {
+    color: #fff;
+  }
+  span {
+    color: #fff;
+  }
+}
+.main {
+  margin: 0px 40px;
+  .top-chooce {
+    width: 100%;
+    margin: 40px 0px;
+    .choose-bar {
+      ul {
+        float: left;
+        list-style: none;
+        li {
+          float: left;
+          padding-right: 8px;
+          padding-top: 12px;
+          .el-select {
+            width: 150px;
+          }
+        }
+      }
+      .action-bar {
+        float: right;
+        padding-top: 12px;
+      }
+    }
+  }
+}
+.extra{
+  margin-bottom: 30px;
+  text-align: center;
+  .wirte{
+    font-weight: bold;
+  font-size: 18px;
+  }
+}
+.switchover{
+  text-align: center;
+  button{
+    width: 150px;
+    height: 30px;
+    cursor: pointer;
+    border:  1px solid #eeeeee;
+    &:last-child{
+      margin-left: 20px;
+    }
+  }
+}
+.indicator_diot{
+  text-align: center;
+  margin-top: 20px;
+  ul{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    li{
+      height: 30px;
+      width: 30px;
+      margin-left: 10px;
+      border-radius: 50%;
+      line-height: 30px;
+      cursor: pointer;
+      text-align: center;
+      border: 1px solid #000;
+      &:first-child{
+        margin-left: 0;
+      }
+    }
+  }
+}
+.imgactive{
+  background-color: black;
+  color: white;
+}
+</style>

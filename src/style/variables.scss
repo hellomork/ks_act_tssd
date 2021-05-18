@@ -1,0 +1,42 @@
+/*
+ * @Author: Jordan 
+ * @Date: 2019-07-24 17:34:29 
+ * @Last Modified by: mikey.zhaopeng
+ * @Last Modified time: 2021-04-15 11:55:14
+ */
+$blue:#324157;
+$fontColor:white;
+$light-blue:#090a0a;
+$red:#C03639;
+$pink: #E65D6E;
+$green: #30B08F;
+$tiffany: #4AB7BD;
+$yellow:#FEC171;
+$panGreen: #30B08F;
+// 主题颜色
+// $theme:#3EB6A1;
+$theme:#DA3827;
+$themeBg:#E6352B;
+// 字体颜色
+$textColor: #DA3827;
+$subTextColor: #999999;
+// hover&&选中状态颜色
+$activeColor:#C42D25;
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+// 导出js可调用的变量   
+// 举例： 
+/* import variables from '@/styles/variables.scss' 
+computed: {
+    variables() {
+      return variables
+    }
+  }, */
+// 可以直接在页面上调用
+:export {
+  theme: $theme;
+  themeBg:$themeBg;
+  textColor: $textColor;
+  subTextColor:$subTextColor;
+  activeColor:$activeColor;
+}
