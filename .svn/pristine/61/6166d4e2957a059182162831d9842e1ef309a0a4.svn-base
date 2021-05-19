@@ -13,7 +13,7 @@
               <div class="sort">
                 <ul class="clearfix">
                   <li>排序：</li>
-                  <li :class="sortNum==2?'sortactive':''" @click="sort(2)">最新</li>
+                  <!-- <li :class="sortNum==2?'sortactive':''" @click="sort(2)">最新</li> -->
                   <li
                     :class="sortNum == 1 ? 'sortactive' : ''"
                     @click="sort(1)"
@@ -121,7 +121,7 @@
           <div class="sort">
             <ul class="clearfix">
               <li>排序：</li>
-              <li :class="sortNum==2?'sortactive':''" @click="sort(2)">最新</li>
+              <!-- <li :class="sortNum==2?'sortactive':''" @click="sort(2)">最新</li> -->
               <li :class="sortNum == 1 ? 'sortactive' : ''" @click="sort(1)">
                 编号
               </li>
@@ -218,7 +218,7 @@ export default {
   data() {
     return {
       navNum: 2,
-      sortNum: 2,
+      sortNum: 1,
       classify: 1,
       operateCode: 'ca5ce248-b3b7-11eb-8ecb-b8599f37e6f0',
       loading: false,
