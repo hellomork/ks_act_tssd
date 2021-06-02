@@ -50,38 +50,14 @@ body {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.6);
-  .close_erweima{
-    width: 18px;
-    height: 18px;
-    position: absolute;
-    left: 90%;
-    top: 5%;
-    z-index: 1;
-    cursor: pointer;
-  }
   .center_erweima{
-    width: 400px;
-    position: relative;
+    width: 300px;
+    position: absolute;
     background-color: white;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    height: 400px;
-    img{
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-  p{
-    position: absolute;
-    top: 90%;
-    color: red;
-    font-size: 18px;
-    font-weight: bold;
-    left: 50%;
-    transform: translate(-50%,0%);
+    height: 300px;
   }
   }
 
@@ -152,7 +128,7 @@ body {
 
       .worksubmit {
         position: absolute;
-        bottom: 50px;
+        bottom: 70px;
         width: 250px;
         margin-left: 150px;
         // left: 170px;

@@ -73,20 +73,20 @@ interfaceList.getSysTime().then(resData => {
   // interfaceList.getMapData(() => {
   interfaceList.getSession().then(res => {
     store.commit('SET_USERINFO', res.data.data.list[0].thrid_user)
-    // interfaceList.getSessionLogin().then(res => {
-    //   store.commit('SET_USERINFOLOGIN', res.data.data.list[0].user)
-    interfaceList.getSignature().then(resUploadData => {
-      store.commit('SET_UPLOADPARAMS', resUploadData.data.data.list[0])
-      /* eslint-disable no-new */
-      new Vue({
-        el: '#app',
-        router,
-        store,
-        components: { App },
-        template: '<App/>'
+    interfaceList.getSessionLogin().then(res => {
+      store.commit('SET_USERINFOLOGIN', res.data.data.list[0].user)
+      interfaceList.getSignature().then(resUploadData => {
+        store.commit('SET_UPLOADPARAMS', resUploadData.data.data.list[0])
+        /* eslint-disable no-new */
+        new Vue({
+          el: '#app',
+          router,
+          store,
+          components: { App },
+          template: '<App/>'
+        })
       })
     })
-    // })
   })
   // })
 })

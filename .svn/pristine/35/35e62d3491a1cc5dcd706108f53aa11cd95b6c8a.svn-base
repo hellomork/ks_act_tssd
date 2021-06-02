@@ -16,7 +16,7 @@
           <div class="pic">
             <div class="swiper-bg">
               <video
-                style="width: 100%; object-fit: contain;max-height: 600px"
+                style="width: 100%; object-fit: contain"
                 :src="detail.ocUri"
                 :poster="detail.ocCover"
                 controls
@@ -99,17 +99,6 @@
           </div>
         </div>
       </div>
-        <div class="erweima_whole" id="erweima_whole">
-
-        <div class="center_erweima">
-           <div class="close_erweima" @click="tocloseto()">
-        <img src="@/assets/img/ic_close.png" alt="">
-      </div>
-            <div id="qrcode3" class="qrcode3" ref="qrcode3"></div>
-            <p>微信扫描二维码点赞</p>
-        </div>
-
-      </div>
     </div>
     <!-- 微信 -->
     <div class="wx_picdetail" v-if="isMobile">
@@ -174,7 +163,7 @@
           <i>{{ detail.ocVote }}</i>
         </div>
         <!-- #e6352b -->
-        <div class="rig" v-if="detail.opStatus == 0" style="background-color:#CCCCCC">
+        <div class="rig" v-if="detail.opStatus == 0" style="background-color: rgba(0, 0, 0, 0.3)">
           <!-- <img src="@/assets/imgwx/ic_zan_sel _detail.png" alt=""> -->
           <span >未开始</span>
         </div>
@@ -186,7 +175,7 @@
             >点赞</span
           >
         </div>
-          <div class="rig" v-if="detail.opStatus == 1 && detail.flag == 1" style="background-color: #CCCCCC">
+          <div class="rig" v-if="detail.opStatus == 1 && detail.flag == 1" style="background-color: rgba(0, 0, 0, 0.3)">
           <!-- <img src="@/assets/imgwx/ic_zan_sel _detail.png" alt=""> -->
           <span
 
@@ -194,7 +183,7 @@
             >已点赞</span
           >
         </div>
-          <div class="rig" v-if="detail.opStatus == 2" style="background-color: #CCCCCC">
+          <div class="rig" v-if="detail.opStatus == 2" style="background-color: rgba(0, 0, 0, 0.3)">
           <span >已结束</span>
         </div>
       </div>
@@ -279,30 +268,33 @@ export default {
         this.$message.warning('点赞已满,明天再来吧')
       }
     },
-    tocloseto() {
-      document.getElementById('erweima_whole').style.display = 'none'
-      // this.qrcodeFlag = false
-      this.$refs.qrcode3.innerHTML = ''
-    },
-    creatQrcode1(text) {
-      this.qrcode = new QRCode('qrcode3', {
-        width: 280,
-        height: 280,
-        text: text, // 二维码地址
-        colorDark: '#000',
-        colorLight: '#fff'
-      })
-    },
     userVote(item, num) {
-      if (!this.isMobile) {
-        document.getElementById('erweima_whole').style.display = 'block'
-        var url = window.location.origin + '/21tssd/pic_detail/' + item.ocCode + '/' + this.sortIndex
-        this.$refs.qrcode3.innerHTML = ''
-        // this.qrcodeFlag = true
-        this.creatQrcode1(url)
-        console.log(url)
-      } else {
-        if (!this.userInfo) {
+      if (!this.userInfo) {
+        if (num === 1) {
+          this.$confirm('点赞需要登录，立即去登录', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            /*
+            参数说明：
+            userType：PCWOPERATE / WXOPERATE
+            preUrl： 当前页面地址,,注册页面地址
+            optype：TOUGAO / TOUPIAO
+          */
+            window.location.href =
+              window.location.origin +
+              '/users/getAuthorizeCode.login?preurl=' +
+              window.location.href +
+              ',,' +
+              window.location.origin +
+              '/21sjgs' +
+              '&userType=PCWOPERATE'
+            // this.$router.push({
+            //   path: '/articlecontribute'
+            // })
+          })
+        } else {
           this.$dialog
             .confirm({
               title: '提示信息',
@@ -316,17 +308,17 @@ export default {
                 window.location.href +
                 ',,' +
                 window.location.origin +
-                '/21tssd' +
+                '/21sjgs' +
                 '&userType=WXOPERATE'
             })
             .catch(() => {
               // on cancel
             })
-        } else {
+        }
+      } else {
         // console.log(this.userInfo)
         //  console.log(item)
-          this.vote(item, num)
-        }
+        this.vote(item, num)
       }
     },
     vote(item, num) {
@@ -343,7 +335,11 @@ export default {
             item.ocVote++
             _this.hasCountNum = _this.hasCountNum + 1
             console.log('hasCountNum11', this.hasCountNum)
-            _this.$toast('点赞成功')
+            if (num === 1) {
+              _this.$message.success('点赞成功')
+            } else {
+              _this.$toast('点赞成功')
+            }
             _this.flag = false
             if (res.data.data.list[0] === true) {
               // 点赞已满
@@ -358,7 +354,7 @@ export default {
       this.$refs.toToast.style.display = 'none'
     },
     showQrcode() {
-      var url = window.location.origin + '/21tssd/pic_detail/' + this.ocCode + '/' + this.sortIndex
+      var url = window.location.origin + '/21tssd/pic_detail/' + this.ocCode + this.sortIndex
       this.$refs.qrcode.innerHTML = ''
       this.qrcodeFlag = true
       this.creatQrcode(url)
@@ -438,7 +434,7 @@ export default {
           window.location.origin +
           '/21tssd/pic_detail/' + this.ocCode + '/' + this.sortIndex
         shareConfig.currentCover = item.ocCover
-        shareConfig.currentDetail = '““童声诵党”·庆六一 昆山市少儿朗诵大赛'
+        shareConfig.currentDetail = '“童声诵党”庆党100周年昆山市少儿朗诵大赛'
         // console.log('分享参数：', shareConfig)
         wxService.setWXConfig(shareConfig)
       }

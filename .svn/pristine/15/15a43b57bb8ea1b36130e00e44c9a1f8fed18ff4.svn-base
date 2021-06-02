@@ -11,7 +11,7 @@
               <img src="@/assets/img/hzact/titie_01.png" alt />
             </div>
             <p class="first" style="letter-spacing: 1px">
-              为庆祝六一儿童节，宣传爱党爱国主义教育，“童声诵党”·庆六一 昆山市少儿朗诵大赛于6月1日正式启动。活动旨在鼓舞少年儿童阅读热情，营造良好阅读氛围，并以少儿视角讴歌中国共产党走过的光辉历程和取得的伟大成就。
+              为热烈庆祝中国共产党建党100周年，宣传爱党爱国主义教育，昆山市文化馆于6月1日儿童节之际，发起“童声诵党”庆党100周年昆山市少儿朗诵大赛，鼓舞阅读热情，营造良好阅读氛围，并以少儿视角讴歌100年来中国共产党走过的光辉历程和取得的伟大成就，带动市民重新温习党史，汲取奋进力量。
             </p>
             <h3 class="des">一、活动时间</h3>
             <p class="second filladd">作品征集时间：2021年6月1日至6月30日。</p>
@@ -128,7 +128,7 @@ class="ill"
             <img src="@/assets/imgwx/hzact/titie1.png" alt />
           </div>
           <p class="first">
-            为庆祝六一儿童节，宣传爱党爱国主义教育，“童声诵党”·庆六一 昆山市少儿朗诵大赛于6月1日正式启动。活动旨在鼓舞少年儿童阅读热情，营造良好阅读氛围，并以少儿视角讴歌中国共产党走过的光辉历程和取得的伟大成就。
+            为热烈庆祝中国共产党建党100周年，宣传爱党爱国主义教育，昆山市文化馆于6月1日儿童节之际，发起“童声诵党”庆党100周年昆山市少儿朗诵大赛，鼓舞阅读热情，营造良好阅读氛围，并以少儿视角讴歌100年来中国共产党走过的光辉历程和取得的伟大成就，带动市民重新温习党史，汲取奋进力量。
           </p>
           <h3 style="text-align: center; color: #e6352b">-活动时间-</h3>
           <p style="text-align: justify; text-indent: 0.56rem">
@@ -300,7 +300,7 @@ export default {
   mounted() {
     if (this.isMobile) {
       var shareConfig = {}
-      shareConfig.currentTitle = '“童声诵党”·庆六一 昆山市少儿朗诵大赛'
+      shareConfig.currentTitle = '童声诵党”庆党100周年昆山市少儿朗诵大赛'
       shareConfig.share_url = window.location.href
       shareConfig.currentCover = window.location.origin + '/21tssd/' + imgURrl
       shareConfig.currentDetail = '大赛简介'

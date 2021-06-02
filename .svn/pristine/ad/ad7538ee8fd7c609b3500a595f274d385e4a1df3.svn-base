@@ -98,15 +98,9 @@
         </div>
       </div>
       <div class="erweima_whole" id="erweima_whole">
-
         <div class="center_erweima">
-           <div class="close_erweima" @click="tocloseto()">
-        <img src="@/assets/img/ic_close.png" alt="">
-      </div>
             <div id="qrcode2" class="qrcode2" ref="qrcode2"></div>
-            <p>微信扫描二维码点赞</p>
         </div>
-
       </div>
     </div>
     <!-- wx -->
@@ -260,81 +254,26 @@ export default {
     }
   },
   methods: {
-    tocloseto() {
-      document.getElementById('erweima_whole').style.display = 'none'
+    hideQrcode() {
       // this.qrcodeFlag = false
       this.$refs.qrcode2.innerHTML = ''
     },
     creatQrcode(text) {
-      this.qrcode = new QRCode('qrcode2', {
-        width: 280,
-        height: 280,
+      this.qrcode = new QRCode('qrcode', {
+        width: 300,
+        height: 300,
         text: text, // 二维码地址
         colorDark: '#000',
         colorLight: '#fff'
       })
     },
     userVote(item, num) {
-      if (!this.isMobile) {
-        document.getElementById('erweima_whole').style.display = 'block'
-        var pageNum = (this.pageNum - 1) * this.pageSize + num
-        var url = window.location.origin + '/21tssd/pic_detail/' + item.ocCode + '/' + pageNum
-        this.$refs.qrcode2.innerHTML = ''
-        // this.qrcodeFlag = true
-        this.creatQrcode(url)
-        console.log(url)
-      } else {
-        if (!this.userInfo) {
-          this.$dialog
-            .confirm({
-              title: '提示信息',
-              message: '您还未登录，请先登录',
-              confirmButtonText: '登录'
-            })
-            .then(() => {
-              window.location.href =
-                window.location.origin +
-                '/users/getAuthorizeCode.login?preurl=' +
-                window.location.href +
-                ',,' +
-                window.location.origin +
-                '/21tssd' +
-                '&userType=WXOPERATE'
-            })
-            .catch(() => {
-              // on cancel
-            })
-        } else {
-        // console.log(this.userInfo)
-        //  console.log(item)
-          this.vote(item, num)
-        }
-      }
-    },
-    vote(item, num) {
-      const params = {}
-      const _this = this
-      // 防止重复提交
-      if (!this.flag) {
-        this.flag = true
-        params.ocCode = item.ocCode
-        params.vote = 1
-        params.operateCode = item.operateCode
-        this.$apis.userVote(params).then((res) => {
-          if (res.data.status.returnCode === 100) {
-            item.ocVote++
-            _this.hasCountNum = _this.hasCountNum + 1
-            console.log('hasCountNum11', this.hasCountNum)
-            _this.$toast('点赞成功')
-            _this.flag = false
-            if (res.data.data.list[0] === true) {
-              // 点赞已满
-              item.flag = 1
-              return false
-            }
-          }
-        })
-      }
+      document.getElementById('erweima_whole').style.display = 'block'
+      var url = window.location.origin + '/21tssd/pic_detail/' + item.ocCode + '/' + num
+      this.$refs.qrcode2.innerHTML = ''
+      // this.qrcodeFlag = true
+      this.creatQrcode(url)
+      console.log(url)
     },
     isReadyZan() {
       if (this.isMobile) {
