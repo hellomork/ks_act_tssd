@@ -261,8 +261,7 @@ export default {
       show: false,
       activeindex: 0,
       flag: false,
-      qrcodeFlag: false,
-      voteFullFlag: false
+      qrcodeFlag: false
       // url: window.location.href
     }
   },
@@ -342,7 +341,6 @@ export default {
         this.$apis.userVote(params).then((res) => {
           if (res.data.status.returnCode === 100) {
             if (res.data.data.list[0] === true) {
-              _this.voteFullFlag = true
               // 点赞已满
               item.flag = 1
               return false

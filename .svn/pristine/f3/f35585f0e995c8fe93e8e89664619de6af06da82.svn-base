@@ -1,58 +1,58 @@
 <template>
   <div>
-    <template v-if="fileType==2">
-       <van-uploader
+    <template v-if="fileType == 2">
+      <van-uploader
         v-model="picList"
-       :accept="accept"
-       :preview-image="true"
-       :max-size="max_file_size"
-       :multiple="false"
-       :before-read="beforeRead"
-       :after-read="afterRead"
-       :before-delete="beforeDelete"
-       :deletable='true'
-       :max-count="1">
+        accept="*"
+        :preview-image="true"
+        :max-size="max_file_size"
+        :multiple="multiple"
+        :before-read="beforeRead"
+        :after-read="afterRead"
+        :before-delete="beforeDelete"
+        :deletable="true"
+        :max-count="1"
+      >
         <!-- <div class="load">
           <img src="@/assets/imgwx/ic_load.png" alt />
           <p>上传作品</p>
         </div> -->
-       </van-uploader>
-         <van-overlay :show="showFlag" z-index="999999">
+      </van-uploader>
+      <van-overlay :show="showFlag" z-index="999999">
         <div class="wrapper">
           <div class="block">
             <van-loading type="spinner" color="#1989fa" />
-            <h3 class="h3">图片上传中</h3>
+            <h3 class="h3">视频上传中</h3>
           </div>
         </div>
       </van-overlay>
     </template>
     <template v-if="fileType == 1">
       <el-upload
+        class="upload-demo"
         :ref="eleUpload"
         action
-        accept=".jpg,.jpeg,.png"
-        list-type="picture-card"
+        accept=".mp4"
         :on-remove="handleRemove"
         :on-preview="handlePictureCardPreview"
-        :multiple='false'
         :auto-upload="true"
         :limit="limit"
         :http-request="uploadPc"
-        :on-change="beforeUpload"
-        :on-exceed="exceed">
-        <i class="el-icon-plus"></i>
+        :before-upload="beforeUpload"
+        :on-exceed="exceed"
+        :on-change="uploadVideoProcess"
+      >
+        <el-button size="small" type="primary">点击上传</el-button>
       </el-upload>
-        <el-dialog :visible.sync="dialogVisible" class="upload-image">
-          <div class="bg" :style="{backgroundImage:'url('+dialogImageUrl+')'}"></div>
-        </el-dialog>
-        <van-overlay :show="showFlag" z-index="999999">
+      <van-overlay :show="showFlag" z-index="999999">
         <div class="wrapper">
           <div class="block">
             <van-loading type="spinner" color="#1989fa" />
-            <i class="h32" style="">图片上传中</i>
+            <i class="h32" style="">视频上传中</i>
           </div>
         </div>
       </van-overlay>
+      <!-- <el-progress v-if="videoFlag ==true" type="line" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress> -->
     </template>
   </div>
 </template>
@@ -91,11 +91,11 @@ export default {
     // 文件上传的最大值
     max_file_size: {
       type: String,
-      default: '2048mb'
+      default: '150mb'
     },
     accept: {
       type: String,
-      default: ''
+      default: '.mp4'
     },
     multiple: {
       type: Boolean,
@@ -128,9 +128,7 @@ export default {
       limitImgNumber: 1,
       dialogImageUrl: '',
       dialogVisible: false,
-      picList: [
-
-      ],
+      picList: [],
       hasPreImage: false,
       uploader: null,
       preUrl: this.Url,
@@ -150,11 +148,24 @@ export default {
       videoFlag: false,
       sort: 0,
       flieListWx: [],
+      videoUploadPercent: 0,
       showFlag: false
-
     }
   },
   methods: {
+    // 视频上传进度条
+    uploadVideoProcess(event, file, fileList) {
+      if (file[0].status === 'ready') {
+        this.videoFlag = true // 进度条显示
+        const interval = setInterval(() => {
+          if (this.videoUploadPercent >= 100) {
+            clearInterval(interval)
+            return
+          }
+          this.videoUploadPercent += 1 // 进度条进度
+        }, 80)
+      }
+    },
     handleRemove(file, fileList) {
       this.$emit('handleRemove', file.uid, this.subscript)
       // this.afterRead(fileList)
@@ -230,25 +241,20 @@ export default {
     /* 转化图片为base64预览*/
     getSignature(callback) {
       var that = this
-      // this.$apis.getSignature('').then(res => {
-      //   that.ossParams = res.data.data.list[0]
-      //   that.uploadUrl = res.data.data.list[0].host
-      //   callback()
-      // })
-      that.ossParams = that.$store.state.app.uploadParams
-      that.uploadUrl = that.ossParams.oss_domain
-
-      callback()
+      this.$apis.getSignature('').then((res) => {
+        that.ossParams = res.data.data.list[0]
+        that.uploadUrl = res.data.data.list[0].host
+        callback()
+      })
+      // that.ossParams = that.$store.state.app.uploadParams
+      // that.uploadUrl = that.ossParams.oss_domain
+      // callback()
     },
     afterRead(file, detail) {
-      // debugger
       const that = this
+      that.showFlag = true
       this.getSignature(() => {
-        if (that.fileType === 1) {
-          file.status = 'ready'
-        } else {
-          file.status = 'uploading'
-        }
+        file.status = 'ready'
         file.message = '上传中...'
         var getSuffix = function(fileName) {
           var pos = fileName.lastIndexOf('.')
@@ -258,7 +264,13 @@ export default {
           }
           return suffix
         }
-        var filename = this.ossParams.dir + '/' + Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(file.file.name)
+        var filename =
+          this.ossParams.dir +
+          '/' +
+          Date.parse(new Date()) +
+          '_' +
+          this.random_string(6) +
+          getSuffix(file.file.name)
         console.log(file, file.file.name)
         var formData = new FormData()
         // 注意formData里append添加的键的大小写
@@ -295,50 +307,61 @@ export default {
       })
     },
     beforeDelete(file, detail) {
-      console.log(['picList', this.picList])
+      // console.log(['picList', this.picList])
       this.picList.splice(detail.index, 1)
-      console.log(file, detail)
+      console.log('ddd', file, detail)
       this.$emit('delete', detail, this.subscript)
     },
-    startUpload() {
-
-    },
+    startUpload() {},
     beforeRead(file) {
-      const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
-      if (!isJPG) {
-        this.$toast('请上传 jpg 或者png格式图片')
-        return false
-      }
-      this.showFlag = true
-      //  const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
-      //   if (!isJPG) {
-      //   this.$toast('请上传 jpg 或者png格式图片')
-      //   return false
-      //   }
-      // const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
+      // debugger
+      // this.$toast(file.type)
 
-      return true
+      const isJPG = file.type === 'video/mp4'
+      if (!isJPG) {
+        this.$toast('请上传 mp4格式视频')
+      }
+      const isLt15M = file.size / 1024 / 1024 < 100
+      if (!isLt15M) {
+        this.$message.error('上传视频大小不能超过 100MB!')
+      }
+      return isJPG && isLt15M
     },
     /** ***
      * pc上传
      */
     beforeUpload(file, fileList) {
-      const isJPG = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png')
+      // const isJPG = (file.raw.type === 'image/jpeg' || file.raw.type === 'image/png')
 
-      const isLt10M = file.size / 1024 / 1024 < 10
-      // 是否展示图片+号
-      // this.uploadDisabled = fileList.length >= this.limitImgNumber
-      if (!isJPG) {
-        this.$message.error('上传图片格式不对，只支持jpg，png!')
+      // const isLt10M = file.size / 1024 / 1024 < 10
+      // if (!isJPG) {
+      //   this.$message.error('上传头像图片格式不对，只支持jpg，png!')
+      // }
+      // if (!isLt10M) {
+      //   this.$message.error('上传头像图片大小不能超过 10MB!')
+      // }
+      // return isJPG && isLt10M
+      const isLt15M = file.size / 1024 / 1024 < 100
+      if (
+        [
+          'video/mp4',
+          'video/ogg',
+          'video/flv',
+          'video/avi',
+          'video/wmv',
+          'video/rmvb'
+        ].indexOf(file.type) === -1
+      ) {
+        this.$message.error('请上传MP4格式的视频文件')
+        return false
       }
-      if (!isLt10M) {
-        this.$message.error('上传图片大小不能超过 10MB!')
+      if (!isLt15M) {
+        this.$message.error('上传视频大小不能超过 100MB!')
+        return false
       }
-
-      return isJPG && isLt10M
     },
     exceed(files, fileList) {
-      this.$message.error('超出限制，只能选1张图片，请删除后再添加')
+      this.$message.error('超出限制，只能最多选一个视频，请删除后再添加')
     },
     // 覆盖默认的上传行为，自定义上传的实现
     uploadPc(file) {
@@ -357,6 +380,15 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.overzhao {
+  position: fixed;
+  z-index: 999999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
 .block {
   transform: translate(-50%, -50%);
   left: 50%;

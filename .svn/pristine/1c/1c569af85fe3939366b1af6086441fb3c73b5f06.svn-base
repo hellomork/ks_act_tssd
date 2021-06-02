@@ -178,7 +178,7 @@
         <!-- 视频的上传 -->
         <div class="bb">
             <li v-for="(item, index) in kaOperateContentList" :key="item.indexId">
-          <div class="fengmian" style="margin-bottom:0.2rem">封面图上传</div>
+          <div class="fengmian" >封面图上传</div>
           <UploadCover
             :fileType="2"
             @uploadSuccess="uploadSuccess"
@@ -187,7 +187,7 @@
             :ref="'upload_' + item.indexId"
             :name="index"
           ></UploadCover>
-          <div class="fengmian" style="margin-top:0.4rem;margin-bottom:0.2rem">视频上传</div>
+          <div class="fengmian" style="margin-top:0.4rem">视频上传</div>
           <UploadVideo
             :fileType="2"
             @uploadSuccess="uploadVideoSuccess"

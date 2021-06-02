@@ -341,17 +341,16 @@ export default {
         params.operateCode = item.operateCode
         this.$apis.userVote(params).then((res) => {
           if (res.data.status.returnCode === 100) {
+            item.ocVote++
+            _this.hasCountNum = _this.hasCountNum + 1
+            console.log('hasCountNum11', this.hasCountNum)
+            _this.$toast('点赞成功')
+            _this.flag = false
             if (res.data.data.list[0] === true) {
               _this.voteFullFlag = true
               // 点赞已满
               item.flag = 1
               return false
-            } else {
-              item.ocVote++
-              _this.hasCountNum = _this.hasCountNum + 1
-              console.log('hasCountNum11', this.hasCountNum)
-              _this.$toast('点赞成功')
-              _this.flag = false
             }
           }
         })
@@ -441,7 +440,7 @@ export default {
           window.location.origin +
           '/21tssd/pic_detail/' + this.ocCode + '/' + this.sortIndex
         shareConfig.currentCover = item.ocCover
-        shareConfig.currentDetail = '“童声诵党”·庆六一 昆山市少儿朗诵大赛'
+        shareConfig.currentDetail = '““童声诵党”·庆六一 昆山市少儿朗诵大赛'
         // console.log('分享参数：', shareConfig)
         wxService.setWXConfig(shareConfig)
       }

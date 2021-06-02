@@ -12,10 +12,10 @@
        :before-delete="beforeDelete"
        :deletable='true'
        :max-count="1">
-        <!-- <div class="load">
+        <div class="load">
           <img src="@/assets/imgwx/ic_load.png" alt />
           <p>上传作品</p>
-        </div> -->
+        </div>
        </van-uploader>
          <van-overlay :show="showFlag" z-index="999999">
         <div class="wrapper">
@@ -237,62 +237,172 @@ export default {
       // })
       that.ossParams = that.$store.state.app.uploadParams
       that.uploadUrl = that.ossParams.oss_domain
-
       callback()
     },
     afterRead(file, detail) {
-      // debugger
       const that = this
-      this.getSignature(() => {
-        if (that.fileType === 1) {
-          file.status = 'ready'
+      // if(this.isMobile){
+      //   that.uid = file.lastModified
+      // }else{
+      //   that.uid = file.file.uid
+      // }
+      // var imglist = []
+      if (this.isMobile) {
+        this.flieListWx = file
+        if (file.length > 1) {
+          file.forEach(item => {
+            this.getSignature(() => {
+              if (that.fileType === 1) {
+                item.status = 'ready'
+              } else {
+                item.status = 'uploading'
+              }
+              item.message = '上传中...'
+              var getSuffix = function(fileName) {
+                var pos = fileName.lastIndexOf('.')
+                var suffix = ''
+                if (pos !== -1) {
+                  suffix = fileName.substring(pos)
+                }
+                return suffix
+              }
+              var filename = this.ossParams.dir + '/' + Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(item.file.name)
+              console.log('item', item, item.file.name)
+              var formData = new FormData()
+              // 注意formData里append添加的键的大小写
+              formData.append('key', filename) // 存储在oss的文件路径
+              formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
+              formData.append('policy', this.ossParams.policy) // policy
+              formData.append('Signature', this.ossParams.signature) // 签名
+              // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+              formData.append('file', item.file)
+              formData.append('success_action_status', 200) // 成功后返回的操作码
+              var url = this.ossParams.oss_domain
+              var fileUrl = this.ossParams.oss_domain + '/' + filename
+              $.ajax({
+                url: url,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                  item.percentage = 100
+                  item.status = 'success'
+                  item.message = '上传成功'
+                  that.$emit('uploadSuccess', fileUrl, item.file, that.subscript)
+                },
+                error: function(data) {
+                  console.log(data)
+                  item.status = 'failed'
+                  item.message = '上传失败'
+                }
+              })
+            })
+          })
         } else {
-          file.status = 'uploading'
+          this.getSignature(() => {
+            if (that.fileType === 1) {
+              file.status = 'ready'
+            } else {
+              file.status = 'uploading'
+            }
+            file.message = '上传中...'
+            var getSuffix = function(fileName) {
+              var pos = fileName.lastIndexOf('.')
+              var suffix = ''
+              if (pos !== -1) {
+                suffix = fileName.substring(pos)
+              }
+              return suffix
+            }
+            var filename = this.ossParams.dir + '/' + Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(file.file.name)
+            console.log(file, file.file.name)
+            var formData = new FormData()
+            // 注意formData里append添加的键的大小写
+            formData.append('key', filename) // 存储在oss的文件路径
+            formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
+            formData.append('policy', this.ossParams.policy) // policy
+            formData.append('Signature', this.ossParams.signature) // 签名
+            // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+            formData.append('file', file.file)
+            formData.append('success_action_status', 200) // 成功后返回的操作码
+            var url = this.ossParams.oss_domain
+            var fileUrl = this.ossParams.oss_domain + '/' + filename
+            $.ajax({
+              url: url,
+              type: 'POST',
+              data: formData,
+              async: false,
+              cache: false,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                file.percentage = 100
+                file.status = 'success'
+                file.message = '上传成功'
+                that.$emit('uploadSuccess', fileUrl, file.file.uid, that.subscript)
+              },
+              error: function(data) {
+                console.log(data)
+                file.status = 'failed'
+                file.message = '上传失败'
+              }
+            })
+          })
         }
-        file.message = '上传中...'
-        var getSuffix = function(fileName) {
-          var pos = fileName.lastIndexOf('.')
-          var suffix = ''
-          if (pos !== -1) {
-            suffix = fileName.substring(pos)
+      } else {
+        this.getSignature(() => {
+          if (that.fileType === 1) {
+            file.status = 'ready'
+          } else {
+            file.status = 'uploading'
           }
-          return suffix
-        }
-        var filename = this.ossParams.dir + '/' + Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(file.file.name)
-        console.log(file, file.file.name)
-        var formData = new FormData()
-        // 注意formData里append添加的键的大小写
-        formData.append('key', filename) // 存储在oss的文件路径
-        formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
-        formData.append('policy', this.ossParams.policy) // policy
-        formData.append('Signature', this.ossParams.signature) // 签名
-        // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
-        formData.append('file', file.file)
-        formData.append('success_action_status', 200) // 成功后返回的操作码
-        var url = this.ossParams.oss_domain
-        var fileUrl = this.ossParams.oss_domain + '/' + filename
-        $.ajax({
-          url: url,
-          type: 'POST',
-          data: formData,
-          async: false,
-          cache: false,
-          contentType: false,
-          processData: false,
-          success: function(data) {
-            file.percentage = 100
-            file.status = 'success'
-            file.message = '上传成功'
-            that.showFlag = false
-            that.$emit('uploadSuccess', fileUrl, file.file.uid, that.subscript)
-          },
-          error: function(data) {
-            console.log(data)
-            file.status = 'failed'
-            file.message = '上传失败'
+          file.message = '上传中...'
+          var getSuffix = function(fileName) {
+            var pos = fileName.lastIndexOf('.')
+            var suffix = ''
+            if (pos !== -1) {
+              suffix = fileName.substring(pos)
+            }
+            return suffix
           }
+          var filename = this.ossParams.dir + '/' + Date.parse(new Date()) + '_' + this.random_string(6) + getSuffix(file.file.name)
+          console.log(file, file.file.name)
+          var formData = new FormData()
+          // 注意formData里append添加的键的大小写
+          formData.append('key', filename) // 存储在oss的文件路径
+          formData.append('OSSAccessKeyId', this.ossParams.accessid) // accessKeyId
+          formData.append('policy', this.ossParams.policy) // policy
+          formData.append('Signature', this.ossParams.signature) // 签名
+          // 如果是base64文件，那么直接把base64字符串转成blob对象进行上传就可以了
+          formData.append('file', file.file)
+          formData.append('success_action_status', 200) // 成功后返回的操作码
+          var url = this.ossParams.oss_domain
+          var fileUrl = this.ossParams.oss_domain + '/' + filename
+          $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+              file.percentage = 100
+              file.status = 'success'
+              file.message = '上传成功'
+              that.$emit('uploadSuccess', fileUrl, file.file.uid, that.subscript)
+            },
+            error: function(data) {
+              console.log(data)
+              file.status = 'failed'
+              file.message = '上传失败'
+            }
+          })
         })
-      })
+      }
     },
     beforeDelete(file, detail) {
       console.log(['picList', this.picList])
@@ -309,7 +419,6 @@ export default {
         this.$toast('请上传 jpg 或者png格式图片')
         return false
       }
-      this.showFlag = true
       //  const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png')
       //   if (!isJPG) {
       //   this.$toast('请上传 jpg 或者png格式图片')
@@ -329,12 +438,11 @@ export default {
       // 是否展示图片+号
       // this.uploadDisabled = fileList.length >= this.limitImgNumber
       if (!isJPG) {
-        this.$message.error('上传图片格式不对，只支持jpg，png!')
+        this.$message.error('上传头像图片格式不对，只支持jpg，png!')
       }
       if (!isLt10M) {
-        this.$message.error('上传图片大小不能超过 10MB!')
+        this.$message.error('上传头像图片大小不能超过 10MB!')
       }
-
       return isJPG && isLt10M
     },
     exceed(files, fileList) {
