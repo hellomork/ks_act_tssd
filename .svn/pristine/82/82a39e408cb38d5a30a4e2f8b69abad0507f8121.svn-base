@@ -344,7 +344,6 @@ export default {
             if (res.data.data.list[0] === true) {
               // 点赞已满
               item.flag = 1
-              _this.flag = false
               return false
             } else {
               item.ocVote++
